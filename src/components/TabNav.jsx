@@ -2,6 +2,7 @@ const TABS = [
   ["board", "Board"],
   ["cases", "Cases"],
   ["requests", "Requests"],
+  ["settings", "Settings"],
 ];
 
 export default function TabNav({ activeTab, onSelect }) {

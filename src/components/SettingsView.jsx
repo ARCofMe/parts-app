@@ -1,0 +1,125 @@
+const CASES_FILTER_KEY = "cases";
+const REQUESTS_FILTER_KEY = "requests";
+
+export default function SettingsView({
+  themeMode,
+  onThemeModeChange,
+  appName,
+  onAppNameChange,
+  preferences,
+  onPreferencesChange,
+  onClearSavedState,
+}) {
+  return (
+    <section className="panel settings-layout">
+      <div>
+        <p className="section-kicker">Operator preferences</p>
+        <h2 className="settings-title">Settings</h2>
+        <p className="settings-copy">Keep the parts workspace stable between sessions and reduce repeat operator setup.</p>
+      </div>
+
+      <div className="settings-grid">
+        <article className="metric-card wide">
+          <p>Branding</p>
+          <div className="detail-grid">
+            <label className="field">
+              <span>App name</span>
+              <input value={appName} onChange={(event) => onAppNameChange(event.target.value)} placeholder="Parts Cannon" />
+            </label>
+          </div>
+        </article>
+
+        <article className="metric-card wide">
+          <p>Appearance</p>
+          <div className="theme-toggle-row">
+            <button type="button" className={themeMode === "light" ? "tab-button active" : "tab-button"} onClick={() => onThemeModeChange("light")}>
+              Light
+            </button>
+            <button type="button" className={themeMode === "dark" ? "tab-button active" : "tab-button"} onClick={() => onThemeModeChange("dark")}>
+              Dark
+            </button>
+          </div>
+        </article>
+
+        <article className="metric-card wide">
+          <p>Workspace memory</p>
+          <div className="list-stack compact">
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={preferences.rememberLastCase}
+                onChange={(event) => onPreferencesChange({ ...preferences, rememberLastCase: event.target.checked })}
+              />
+              <span>Remember last selected case</span>
+            </label>
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={preferences.restoreLastCaseOnLaunch}
+                onChange={(event) => onPreferencesChange({ ...preferences, restoreLastCaseOnLaunch: event.target.checked })}
+              />
+              <span>Restore last case on launch</span>
+            </label>
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={preferences.rememberLastRequest}
+                onChange={(event) => onPreferencesChange({ ...preferences, rememberLastRequest: event.target.checked })}
+              />
+              <span>Remember last tracked request</span>
+            </label>
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={preferences.restoreLastRequestOnLaunch}
+                onChange={(event) => onPreferencesChange({ ...preferences, restoreLastRequestOnLaunch: event.target.checked })}
+              />
+              <span>Restore last tracked request on launch</span>
+            </label>
+          </div>
+        </article>
+
+        <article className="metric-card wide">
+          <p>Saved filters</p>
+          <div className="list-stack compact">
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={preferences.persistFilters[CASES_FILTER_KEY]}
+                onChange={(event) =>
+                  onPreferencesChange({
+                    ...preferences,
+                    persistFilters: { ...preferences.persistFilters, [CASES_FILTER_KEY]: event.target.checked },
+                  })
+                }
+              />
+              <span>Persist case filters</span>
+            </label>
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={preferences.persistFilters[REQUESTS_FILTER_KEY]}
+                onChange={(event) =>
+                  onPreferencesChange({
+                    ...preferences,
+                    persistFilters: { ...preferences.persistFilters, [REQUESTS_FILTER_KEY]: event.target.checked },
+                  })
+                }
+              />
+              <span>Persist request filters</span>
+            </label>
+          </div>
+        </article>
+
+        <article className="metric-card wide">
+          <p>Reset</p>
+          <div className="action-row">
+            <button type="button" className="secondary-button" onClick={onClearSavedState}>
+              Clear saved filters and selections
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  );
+}

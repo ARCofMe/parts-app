@@ -5,6 +5,23 @@ import TabNav from "./components/TabNav";
 import BoardView from "./components/BoardView";
 import CasesView from "./components/CasesView";
 import RequestsView from "./components/RequestsView";
+import SettingsView from "./components/SettingsView";
+
+const THEME_MODE_KEY = "parts-theme-mode";
+const APP_NAME_KEY = "parts-app-name";
+const PARTS_PREFERENCES_KEY = "parts-preferences";
+const LAST_CASE_KEY = "parts-last-case";
+const LAST_REQUEST_KEY = "parts-last-request";
+const DEFAULT_APP_NAME = "Parts Cannon";
+const DEFAULT_PREFERENCES = {
+  caseFilters: { stage: "", age: "", status: "", reference: "" },
+  requestFilters: { status: "", assignedPartsLabel: "", reference: "", caseStageLabel: "" },
+  persistFilters: { cases: true, requests: true },
+  rememberLastCase: true,
+  restoreLastCaseOnLaunch: false,
+  rememberLastRequest: true,
+  restoreLastRequestOnLaunch: false,
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState("board");
@@ -28,12 +45,50 @@ export default function App() {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [selectedRequestDetail, setSelectedRequestDetail] = useState(null);
   const [requestDetailLoading, setRequestDetailLoading] = useState(false);
+  const [themeMode, setThemeMode] = useState(() => window.localStorage.getItem(THEME_MODE_KEY) || "light");
+  const [appName, setAppName] = useState(() => window.localStorage.getItem(APP_NAME_KEY) || DEFAULT_APP_NAME);
+  const [preferences, setPreferences] = useState(() => readStoredPreferences());
 
   useEffect(() => {
     loadBoard();
     loadCases();
     loadRequests();
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(THEME_MODE_KEY, themeMode);
+    document.documentElement.dataset.theme = themeMode;
+  }, [themeMode]);
+
+  useEffect(() => {
+    const nextName = appName.trim() || DEFAULT_APP_NAME;
+    window.localStorage.setItem(APP_NAME_KEY, nextName);
+    document.title = `${nextName} | ARCoM Ops Hub`;
+  }, [appName]);
+
+  useEffect(() => {
+    window.localStorage.setItem(PARTS_PREFERENCES_KEY, JSON.stringify(preferences));
+  }, [preferences]);
+
+  useEffect(() => {
+    if (!preferences.restoreLastCaseOnLaunch) return;
+    const lastReference = window.localStorage.getItem(LAST_CASE_KEY);
+    if (!lastReference || !cases.length || selectedCase) return;
+    const match = cases.find((item) => item.reference === lastReference);
+    if (match) {
+      handleCaseSelect(match);
+    }
+  }, [cases, preferences.restoreLastCaseOnLaunch, selectedCase]);
+
+  useEffect(() => {
+    if (!preferences.restoreLastRequestOnLaunch) return;
+    const lastRequest = window.localStorage.getItem(LAST_REQUEST_KEY);
+    if (!lastRequest || !requests.length || selectedRequest) return;
+    const match = requests.find((item) => String(item.requestId) === lastRequest);
+    if (match) {
+      handleRequestSelect(match);
+    }
+  }, [preferences.restoreLastRequestOnLaunch, requests, selectedRequest]);
 
   async function loadBoard() {
     setBoardLoading(true);
@@ -113,6 +168,9 @@ export default function App() {
   async function handleCaseSelect(item) {
     setSelectedCase(item);
     setCaseActionState(null);
+    if (preferences.rememberLastCase && item?.reference) {
+      window.localStorage.setItem(LAST_CASE_KEY, item.reference);
+    }
     await loadCaseDetail(item.reference);
   }
 
@@ -131,7 +189,21 @@ export default function App() {
   async function handleRequestSelect(item) {
     setSelectedRequest(item);
     setRequestActionState(null);
+    if (preferences.rememberLastRequest && item?.requestId) {
+      window.localStorage.setItem(LAST_REQUEST_KEY, String(item.requestId));
+    }
     await loadRequestDetail(item.requestId);
+  }
+
+  function clearSavedState() {
+    window.localStorage.removeItem(LAST_CASE_KEY);
+    window.localStorage.removeItem(LAST_REQUEST_KEY);
+    window.localStorage.removeItem(PARTS_PREFERENCES_KEY);
+    setPreferences(DEFAULT_PREFERENCES);
+    setSelectedCase(null);
+    setSelectedCaseDetail(null);
+    setSelectedRequest(null);
+    setSelectedRequestDetail(null);
   }
 
   async function handleCaseAction(srId, action, body) {
@@ -188,7 +260,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <BrandBar />
+      <BrandBar appName={appName.trim() || DEFAULT_APP_NAME} />
       <TabNav activeTab={activeTab} onSelect={setActiveTab} />
 
       {activeTab === "board" && (
@@ -209,6 +281,9 @@ export default function App() {
           items={cases}
           loading={casesLoading}
           error={casesError}
+          initialFilters={preferences.caseFilters}
+          persistFilters={preferences.persistFilters.cases}
+          onPreferencesChange={(filters) => setPreferences((current) => ({ ...current, caseFilters: filters }))}
           onRefresh={loadCases}
           onSelectCase={handleCaseSelect}
           selectedCase={selectedCase}
@@ -225,6 +300,9 @@ export default function App() {
           items={requests}
           loading={requestsLoading}
           error={requestsError}
+          initialFilters={preferences.requestFilters}
+          persistFilters={preferences.persistFilters.requests}
+          onPreferencesChange={(filters) => setPreferences((current) => ({ ...current, requestFilters: filters }))}
           onRefresh={loadRequests}
           onSelectRequest={handleRequestSelect}
           selectedRequest={selectedRequest}
@@ -235,8 +313,37 @@ export default function App() {
           onOpenCase={openCaseReference}
         />
       )}
+      {activeTab === "settings" && (
+        <SettingsView
+          themeMode={themeMode}
+          onThemeModeChange={setThemeMode}
+          appName={appName}
+          onAppNameChange={setAppName}
+          preferences={preferences}
+          onPreferencesChange={setPreferences}
+          onClearSavedState={clearSavedState}
+        />
+      )}
     </div>
   );
+}
+
+function readStoredPreferences() {
+  try {
+    const raw = window.localStorage.getItem(PARTS_PREFERENCES_KEY);
+    if (!raw) return DEFAULT_PREFERENCES;
+    const parsed = JSON.parse(raw);
+    return {
+      ...DEFAULT_PREFERENCES,
+      ...parsed,
+      persistFilters: {
+        ...DEFAULT_PREFERENCES.persistFilters,
+        ...(parsed.persistFilters || {}),
+      },
+    };
+  } catch {
+    return DEFAULT_PREFERENCES;
+  }
 }
 
 function formatError(error) {

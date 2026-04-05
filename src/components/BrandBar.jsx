@@ -1,12 +1,12 @@
-export default function BrandBar() {
+export default function BrandBar({ appName = "Parts Cannon" }) {
   return (
     <header className="brand-bar">
       <div>
         <p className="brand-kicker">ARCoM Ops Hub</p>
-        <h1>Parts App</h1>
+        <h1>{appName}</h1>
       </div>
       <p className="brand-copy">
-        Case-first workflow for ordered parts, ETA, tracking, receipt, and scheduling handoff.
+        Claim the request. Track the part. Hand it back clean.
       </p>
     </header>
   );

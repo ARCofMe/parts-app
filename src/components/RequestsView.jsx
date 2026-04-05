@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const DEFAULT_FILTERS = {
   status: "",
@@ -11,6 +11,9 @@ export default function RequestsView({
   items,
   loading,
   error,
+  initialFilters = DEFAULT_FILTERS,
+  persistFilters = true,
+  onPreferencesChange,
   onRefresh,
   onSelectRequest,
   selectedRequest,
@@ -20,8 +23,17 @@ export default function RequestsView({
   requestActionState,
   onOpenCase,
 }) {
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState(initialFilters);
   const [assignedPartsUserId, setAssignedPartsUserId] = useState("");
+
+  useEffect(() => {
+    setFilters(initialFilters);
+  }, [initialFilters]);
+
+  useEffect(() => {
+    if (!persistFilters) return;
+    onPreferencesChange?.(filters);
+  }, [filters, onPreferencesChange, persistFilters]);
 
   const visibleItems = useMemo(() => {
     return (items || []).filter((item) =>

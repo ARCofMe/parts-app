@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const DEFAULT_FILTERS = {
   stage: "",
@@ -11,6 +11,9 @@ export default function CasesView({
   items,
   loading,
   error,
+  initialFilters = DEFAULT_FILTERS,
+  persistFilters = true,
+  onPreferencesChange,
   onRefresh,
   onSelectCase,
   selectedCase,
@@ -21,7 +24,16 @@ export default function CasesView({
   onOpenRequests,
   onOpenRequest,
 }) {
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState(initialFilters);
+
+  useEffect(() => {
+    setFilters(initialFilters);
+  }, [initialFilters]);
+
+  useEffect(() => {
+    if (!persistFilters) return;
+    onPreferencesChange?.(filters);
+  }, [filters, onPreferencesChange, persistFilters]);
 
   const visibleItems = useMemo(() => {
     return (items || []).filter((item) =>
