@@ -12,7 +12,7 @@ const APP_NAME_KEY = "parts-app-name";
 const PARTS_PREFERENCES_KEY = "parts-preferences";
 const LAST_CASE_KEY = "parts-last-case";
 const LAST_REQUEST_KEY = "parts-last-request";
-const DEFAULT_APP_NAME = "Parts Cannon";
+const DEFAULT_APP_NAME = "PartsDesk";
 const DEFAULT_PREFERENCES = {
   caseFilters: { stage: "", age: "", status: "", reference: "" },
   requestFilters: { status: "", assignedPartsLabel: "", reference: "", caseStageLabel: "" },

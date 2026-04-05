@@ -24,7 +24,7 @@ export default function SettingsView({
           <div className="detail-grid">
             <label className="field">
               <span>App name</span>
-              <input value={appName} onChange={(event) => onAppNameChange(event.target.value)} placeholder="Parts Cannon" />
+              <input value={appName} onChange={(event) => onAppNameChange(event.target.value)} placeholder="PartsDesk" />
             </label>
           </div>
         </article>

@@ -1,4 +1,4 @@
-export default function BrandBar({ appName = "Parts Cannon" }) {
+export default function BrandBar({ appName = "PartsDesk" }) {
   return (
     <header className="brand-bar">
       <div>
@@ -6,7 +6,7 @@ export default function BrandBar({ appName = "Parts Cannon" }) {
         <h1>{appName}</h1>
       </div>
       <p className="brand-copy">
-        Claim the request. Track the part. Hand it back clean.
+        Track parts. Follow orders. Keep things moving.
       </p>
     </header>
   );
