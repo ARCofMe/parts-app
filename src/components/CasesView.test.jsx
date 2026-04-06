@@ -44,4 +44,59 @@ describe("CasesView", () => {
     expect(screen.getByText("SR-101")).toBeInTheDocument();
     expect(screen.queryByText("SR-100")).not.toBeInTheDocument();
   });
+
+  it("calls refresh and clears the error state after rerender", () => {
+    const onRefresh = vi.fn();
+    const { rerender } = render(
+      <CasesView
+        items={[]}
+        loading={false}
+        error="Could not load parts cases."
+        onRefresh={onRefresh}
+        onSelectCase={vi.fn()}
+        selectedCase={null}
+        selectedCaseDetail={null}
+        detailLoading={false}
+        actionState={null}
+        onCaseAction={vi.fn()}
+        onOpenRequests={vi.fn()}
+        onOpenRequest={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Could not load parts cases.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <CasesView
+        items={[
+          {
+            caseId: "parts:SR-102",
+            reference: "SR-102",
+            stage: "part_received",
+            stageLabel: "Received",
+            nextAction: "Verify and stage",
+            status: "open",
+            ageBucket: "fresh",
+            assignedPartsLabel: "Parts 3",
+          },
+        ]}
+        loading={false}
+        error=""
+        onRefresh={onRefresh}
+        onSelectCase={vi.fn()}
+        selectedCase={null}
+        selectedCaseDetail={null}
+        detailLoading={false}
+        actionState={null}
+        onCaseAction={vi.fn()}
+        onOpenRequests={vi.fn()}
+        onOpenRequest={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByText("Could not load parts cases.")).not.toBeInTheDocument();
+    expect(screen.getByText("SR-102")).toBeInTheDocument();
+  });
 });

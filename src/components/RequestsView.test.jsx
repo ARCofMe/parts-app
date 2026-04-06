@@ -62,4 +62,56 @@ describe("RequestsView", () => {
     expect(screen.getByText("Linked case")).toBeInTheDocument();
     expect(screen.getByText("SR-101 • Ordered")).toBeInTheDocument();
   });
+
+  it("retries request loading via refresh after an error", () => {
+    const onRefresh = vi.fn();
+    const { rerender } = render(
+      <RequestsView
+        items={[]}
+        loading={false}
+        error="Could not load tracked requests."
+        onRefresh={onRefresh}
+        onSelectRequest={vi.fn()}
+        selectedRequest={null}
+        selectedRequestDetail={null}
+        detailLoading={false}
+        onRequestAction={vi.fn()}
+        requestActionState={null}
+        onOpenCase={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Could not load tracked requests.")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
+    expect(onRefresh).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <RequestsView
+        items={[
+          {
+            requestId: 12,
+            reference: "SR-102",
+            status: "received",
+            description: "Control board",
+            assignedPartsLabel: "Parts 3",
+            caseStageLabel: "Received",
+            nextAction: "Coordinate with dispatch",
+          },
+        ]}
+        loading={false}
+        error=""
+        onRefresh={onRefresh}
+        onSelectRequest={vi.fn()}
+        selectedRequest={null}
+        selectedRequestDetail={null}
+        detailLoading={false}
+        onRequestAction={vi.fn()}
+        requestActionState={null}
+        onOpenCase={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByText("Could not load tracked requests.")).not.toBeInTheDocument();
+    expect(screen.getByText("#12 • SR-102")).toBeInTheDocument();
+  });
 });
