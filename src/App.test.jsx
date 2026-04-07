@@ -137,4 +137,16 @@ describe("Parts App", () => {
     expect(screen.queryByRole("heading", { name: "SR-100" })).not.toBeInTheDocument();
     expect(screen.getByText("Select a parts case to inspect tracked requests and timeline.")).toBeInTheDocument();
   });
+
+  it("drops malformed stored preferences instead of crashing on boot", async () => {
+    window.localStorage.setItem("parts-preferences", "{bad json");
+    partsApiMock.getBoard.mockResolvedValue({ queueSummary: {}, caseMetrics: {}, openCases: [], openTrackedRequests: [] });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(partsApiMock.getBoard).toHaveBeenCalledTimes(1);
+    });
+    expect(() => JSON.parse(window.localStorage.getItem("parts-preferences") || "")).not.toThrow();
+  });
 });

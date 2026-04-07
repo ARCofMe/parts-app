@@ -6,7 +6,7 @@ export default function BrandBar({ appName = "PartsDesk" }) {
         <h1>{appName}</h1>
       </div>
       <p className="brand-copy">
-        Track parts. Follow orders. Keep things moving.
+        Track requests, push receipts through, and keep dispatch from waiting on hidden parts state.
       </p>
     </header>
   );

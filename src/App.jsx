@@ -349,20 +349,26 @@ export default function App() {
 }
 
 function readStoredPreferences() {
+  const parsed = readStoredJson(window.localStorage, PARTS_PREFERENCES_KEY);
+  if (!parsed || typeof parsed !== "object") return DEFAULT_PREFERENCES;
+  return {
+    ...DEFAULT_PREFERENCES,
+    ...parsed,
+    persistFilters: {
+      ...DEFAULT_PREFERENCES.persistFilters,
+      ...(parsed.persistFilters || {}),
+    },
+  };
+}
+
+function readStoredJson(storage, key) {
   try {
-    const raw = window.localStorage.getItem(PARTS_PREFERENCES_KEY);
-    if (!raw) return DEFAULT_PREFERENCES;
-    const parsed = JSON.parse(raw);
-    return {
-      ...DEFAULT_PREFERENCES,
-      ...parsed,
-      persistFilters: {
-        ...DEFAULT_PREFERENCES.persistFilters,
-        ...(parsed.persistFilters || {}),
-      },
-    };
+    const raw = storage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
   } catch {
-    return DEFAULT_PREFERENCES;
+    storage.removeItem(key);
+    return null;
   }
 }
 

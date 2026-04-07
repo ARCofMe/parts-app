@@ -1,10 +1,10 @@
-# Parts App
+# PartsDesk
 
-Parts web frontend for Ops Hub.
+PartsDesk is the parts web frontend for Ops Hub.
 
 This app is separate from `ops-hub` on purpose:
 - `ops-hub` stays the backend, workflow engine, and shared API surface
-- `parts-app` is the case-first UI for ordering, ETA/tracking, receipt, and handoff to dispatch
+- `parts-app` is the PartsDesk case-first UI for ordering, ETA/tracking, receipt, and handoff to dispatch
 
 ## Current tabs
 
@@ -36,6 +36,8 @@ Copy `.env.example` to `.env.local` and set:
 - `VITE_PARTS_USER_ID`
 - `VITE_OPS_HUB_API_TIMEOUT_MS` (optional, defaults to `15000`)
 - `VITE_OPS_HUB_PARTS_READ_TIMEOUT_MS` (optional, defaults to `90000` for board, cases, requests, and detail reads)
+
+The checked-in `.env.example` includes the full supported set.
 
 ## Local development
 
