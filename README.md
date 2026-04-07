@@ -35,6 +35,7 @@ Copy `.env.example` to `.env.local` and set:
 - `VITE_OPS_HUB_API_TOKEN`
 - `VITE_PARTS_USER_ID`
 - `VITE_OPS_HUB_API_TIMEOUT_MS` (optional, defaults to `15000`)
+- `VITE_OPS_HUB_PARTS_READ_TIMEOUT_MS` (optional, defaults to `90000` for board, cases, requests, and detail reads)
 
 ## Local development
 

@@ -34,4 +34,47 @@ describe("partsApi client", () => {
       "Parts or admin identity could not be resolved. Check the parts/admin user ID allowlist.",
     );
   });
+
+  it("uses the extended read timeout for parts board requests", async () => {
+    vi.useFakeTimers();
+    const fetchMock = vi.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              ok: true,
+              text: () => Promise.resolve(JSON.stringify({ openCases: [] })),
+            });
+          }, 16_000);
+        }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const requestPromise = partsApi.getBoard();
+    await vi.advanceTimersByTimeAsync(16_000);
+
+    await expect(requestPromise).resolves.toEqual({ openCases: [] });
+    vi.useRealTimers();
+  });
+
+  it("keeps the shorter default timeout for write requests", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_, options) =>
+        new Promise((_, reject) => {
+          options.signal.addEventListener("abort", () => {
+            reject(new DOMException("The operation was aborted.", "AbortError"));
+          });
+        }),
+      ),
+    );
+
+    const requestPromise = partsApi.sync();
+    const rejection = expect(requestPromise).rejects.toThrow("Ops Hub request timed out after 15s.");
+    await vi.advanceTimersByTimeAsync(15_000);
+
+    await rejection;
+    vi.useRealTimers();
+  });
 });

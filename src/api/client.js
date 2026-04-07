@@ -2,10 +2,12 @@ const API_BASE = (import.meta.env.VITE_OPS_HUB_API_BASE || "http://127.0.0.1:878
 const API_TOKEN = import.meta.env.VITE_OPS_HUB_API_TOKEN || "";
 const PARTS_USER_ID = import.meta.env.VITE_PARTS_USER_ID || "";
 const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_OPS_HUB_API_TIMEOUT_MS || 15000);
+const PARTS_READ_TIMEOUT_MS = Number(import.meta.env.VITE_OPS_HUB_PARTS_READ_TIMEOUT_MS || 90000);
 
 async function request(path, options = {}) {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeoutMs = Number(options.timeoutMs) > 0 ? Number(options.timeoutMs) : REQUEST_TIMEOUT_MS;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   const hasBody = options.body !== undefined;
   try {
     const response = await fetch(`${API_BASE}${path}`, {
@@ -27,8 +29,13 @@ async function request(path, options = {}) {
     }
     return payload;
   } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new Error(`Ops Hub request timed out after ${Math.round(REQUEST_TIMEOUT_MS / 1000)}s.`);
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "name" in error &&
+      error.name === "AbortError"
+    ) {
+      throw new Error(`Ops Hub request timed out after ${Math.round(timeoutMs / 1000)}s.`);
     }
     if (error instanceof TypeError) {
       throw new Error("Could not reach Ops Hub. Check that ops-hub is running and the API base URL is correct.");
@@ -41,7 +48,7 @@ async function request(path, options = {}) {
 
 export const partsApi = {
   getBoard() {
-    return request("/parts/board");
+    return request("/parts/board", { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   getCases(filters = {}) {
     const params = new URLSearchParams();
@@ -49,13 +56,13 @@ export const partsApi = {
       if (value !== undefined && value !== null && `${value}`.trim() !== "") params.set(key, value);
     });
     const suffix = params.size ? `?${params.toString()}` : "";
-    return request(`/parts/cases${suffix}`);
+    return request(`/parts/cases${suffix}`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   getCase(reference) {
-    return request(`/parts/cases/${encodeURIComponent(reference)}`);
+    return request(`/parts/cases/${encodeURIComponent(reference)}`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   getCaseTimeline(reference) {
-    return request(`/parts/cases/${encodeURIComponent(reference)}/timeline`);
+    return request(`/parts/cases/${encodeURIComponent(reference)}/timeline`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   getRequests(filters = {}) {
     const params = new URLSearchParams();
@@ -63,10 +70,10 @@ export const partsApi = {
       if (value !== undefined && value !== null && `${value}`.trim() !== "") params.set(key, value);
     });
     const suffix = params.size ? `?${params.toString()}` : "";
-    return request(`/parts/requests${suffix}`);
+    return request(`/parts/requests${suffix}`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   getRequest(requestId) {
-    return request(`/parts/requests/${requestId}`);
+    return request(`/parts/requests/${requestId}`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   postRequestAction(requestId, action, body = {}) {
     return request(`/parts/requests/${requestId}/${action}`, { method: "POST", body });
