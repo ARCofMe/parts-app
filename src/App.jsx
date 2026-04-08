@@ -36,6 +36,7 @@ export default function App() {
   const [casesLoading, setCasesLoading] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
   const [selectedCaseDetail, setSelectedCaseDetail] = useState(null);
+  const [caseSectionErrors, setCaseSectionErrors] = useState({});
   const [caseActionState, setCaseActionState] = useState(null);
   const [caseDetailLoading, setCaseDetailLoading] = useState(false);
 
@@ -130,17 +131,36 @@ export default function App() {
     caseDetailRequestIdRef.current = requestId;
     setCaseDetailLoading(true);
     setSelectedCaseDetail(null);
+    setCaseSectionErrors({});
     try {
-      const [casePayload, timelinePayload] = await Promise.all([
+      const [caseResult, timelineResult] = await Promise.allSettled([
         partsApi.getCase(reference),
         partsApi.getCaseTimeline(reference),
       ]);
       if (caseDetailRequestIdRef.current !== requestId) return;
-      setSelectedCaseDetail({ ...casePayload, timeline: timelinePayload });
+      const nextSectionErrors = {};
+      const casePayload = caseResult.status === "fulfilled" ? caseResult.value : null;
+      const timelinePayload = timelineResult.status === "fulfilled" ? timelineResult.value : { entries: [] };
+      if (caseResult.status === "rejected") {
+        nextSectionErrors.case = formatError(caseResult.reason);
+      }
+      if (timelineResult.status === "rejected") {
+        nextSectionErrors.timeline = formatError(timelineResult.reason);
+      }
+      if (casePayload) {
+        setSelectedCaseDetail({ ...casePayload, timeline: timelinePayload });
+        setCaseSectionErrors(nextSectionErrors);
+      } else {
+        setSelectedCaseDetail(null);
+        setCaseSectionErrors(nextSectionErrors);
+        setCaseActionState({ error: true, message: nextSectionErrors.case || "Could not load parts case detail." });
+        return;
+      }
       setCaseActionState(null);
     } catch (error) {
       if (caseDetailRequestIdRef.current !== requestId) return;
       setSelectedCaseDetail(null);
+      setCaseSectionErrors({});
       setCaseActionState({ error: true, message: formatError(error) });
     } finally {
       if (caseDetailRequestIdRef.current !== requestId) return;
@@ -197,6 +217,7 @@ export default function App() {
   async function handleCaseSelect(item) {
     setSelectedCase(item);
     setSelectedCaseDetail(null);
+    setCaseSectionErrors({});
     setCaseActionState(null);
     if (preferences.rememberLastCase && item?.reference) {
       window.localStorage.setItem(LAST_CASE_KEY, item.reference);
@@ -320,6 +341,7 @@ export default function App() {
           items={cases}
           loading={casesLoading}
           error={casesError}
+          detailErrors={caseSectionErrors}
           initialFilters={preferences.caseFilters}
           persistFilters={preferences.persistFilters.cases}
           onPreferencesChange={(filters) => setPreferences((current) => ({ ...current, caseFilters: filters }))}

@@ -138,6 +138,31 @@ describe("Parts App", () => {
     expect(screen.getByText("Select a parts case to inspect tracked requests and timeline.")).toBeInTheDocument();
   });
 
+  it("keeps case detail visible when only the timeline request fails", async () => {
+    partsApiMock.getBoard.mockResolvedValue({
+      queueSummary: {},
+      caseMetrics: {},
+      openCases: [],
+      openTrackedRequests: [],
+    });
+    partsApiMock.getCases.mockResolvedValue({
+      items: [{ caseId: "parts:SR-100", reference: "SR-100", stage: "part_ordered", status: "open" }],
+    });
+    partsApiMock.getCase.mockResolvedValue({
+      case: { reference: "SR-100", stage: "part_ordered", status: "open" },
+      trackedRequests: [],
+    });
+    partsApiMock.getCaseTimeline.mockRejectedValue(new Error("Timeline unavailable."));
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Cases" }));
+    fireEvent.click(await screen.findByRole("button", { name: /SR-100/i }));
+
+    expect(await screen.findByRole("heading", { name: "SR-100" })).toBeInTheDocument();
+    expect(screen.getByText("Timeline unavailable.")).toBeInTheDocument();
+  });
+
   it("drops malformed stored preferences instead of crashing on boot", async () => {
     window.localStorage.setItem("parts-preferences", "{bad json");
     partsApiMock.getBoard.mockResolvedValue({ queueSummary: {}, caseMetrics: {}, openCases: [], openTrackedRequests: [] });

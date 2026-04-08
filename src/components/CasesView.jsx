@@ -11,6 +11,7 @@ export default function CasesView({
   items,
   loading,
   error,
+  detailErrors = {},
   initialFilters = DEFAULT_FILTERS,
   persistFilters = true,
   onPreferencesChange,
@@ -98,6 +99,7 @@ export default function CasesView({
       <CaseDetail
         detail={selectedCaseDetail}
         loading={detailLoading}
+        detailErrors={detailErrors}
         actionState={actionState}
         onCaseAction={onCaseAction}
         onOpenRequests={onOpenRequests}
@@ -107,7 +109,7 @@ export default function CasesView({
   );
 }
 
-function CaseDetail({ detail, loading, actionState, onCaseAction, onOpenRequests, onOpenRequest }) {
+function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, onOpenRequests, onOpenRequest }) {
   const [eta, setEta] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [trackingCarrier, setTrackingCarrier] = useState("");
@@ -250,6 +252,7 @@ function CaseDetail({ detail, loading, actionState, onCaseAction, onOpenRequests
 
       <div className="detail-block">
         <strong>Timeline</strong>
+        {!!detailErrors?.timeline && <p className="error-text">{detailErrors.timeline}</p>}
         <div className="history-list tall">
           {(detail.timeline?.entries || []).map((entry, index) => (
             <div key={`${entry.occurredAt}-${index}`} className="history-entry">
