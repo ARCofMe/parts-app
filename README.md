@@ -1,45 +1,42 @@
 # PartsDesk
 
-PartsDesk is the parts web frontend for Ops Hub.
+PartsDesk is the parts operations web app for Ops Hub.
 
-This app is separate from `ops-hub` on purpose:
-- `ops-hub` stays the backend, workflow engine, and shared API surface
-- `parts-app` is the PartsDesk case-first UI for ordering, ETA/tracking, receipt, and handoff to dispatch
+It is built for the office-side parts workflow:
 
-## Current tabs
+- open queue visibility
+- case-first parts handling
+- request tracking and ownership
+- ETA, tracking, receipt, and readiness handoff
+- BlueFolder status context alongside internal workflow state
 
-- `Board`
-- `Cases`
-- `Requests`
-- `Settings`
-
-## Current scope
+## Main Workspaces
 
 - `Board`
-Queue-first overview of open requests, case-stage distribution, ownership pressure, and quick jumps into active work.
-
+  Overview of queue pressure, stage distribution, and ownership load.
 - `Cases`
-Case-first workspace for ordering, ETA, tracking, receipt, readiness handoff, linked request context, and timeline review. Cases now also show the underlying BlueFolder SR status plus normalized `serviceRequestStatusMeta` so operators can tell whether a case is still active because the SR is truly parts-related versus closed, quote-blocked, or waiting on customer follow-up.
-
+  Case-first workspace for parts lifecycle work and dispatch handoff.
 - `Requests`
-Tracked request queue with claim/unclaim/status actions and direct linkage back to the owning case.
-
+  Tracked request queue with claim, unclaim, and status actions.
 - `Settings`
-Local operator preferences for theme, saved filters, and restoring the last case/request context.
+  Local operator preferences and remembered context.
 
-## Environment
+## Runtime Requirements
 
-Copy `.env.example` to `.env.local` and set:
+Create `.env.local` from `.env.example` and set:
 
 - `VITE_OPS_HUB_API_BASE`
 - `VITE_OPS_HUB_API_TOKEN`
 - `VITE_PARTS_USER_ID`
-- `VITE_OPS_HUB_API_TIMEOUT_MS` (optional, defaults to `15000`)
-- `VITE_OPS_HUB_PARTS_READ_TIMEOUT_MS` (optional, defaults to `90000` for board, cases, requests, and detail reads)
 
-The checked-in `.env.example` includes the full supported set.
+Optional:
 
-## Local development
+- `VITE_OPS_HUB_API_TIMEOUT_MS`
+- `VITE_OPS_HUB_PARTS_READ_TIMEOUT_MS`
+
+PartsDesk branding is fixed in the app. There is no product-name override.
+
+## Local Development
 
 ```bash
 npm install
@@ -52,16 +49,14 @@ Build:
 npm run build
 ```
 
-Tests:
+Run tests:
 
 ```bash
 npm test
 ```
 
-## Current status
+## Notes
 
-This app now has the same baseline operator polish level as the dispatch app:
-- PartsDesk branding is fixed; theme is operator-configurable
-- light and dark mode are both supported
-- case/request filters can be persisted locally
-- the last selected case/request can be remembered and restored on launch
+- PartsDesk depends on Ops Hub for case, request, and BlueFolder-derived status data.
+- Cases now include underlying BlueFolder SR status context so operators can distinguish true active parts work from quote-blocked, customer-waiting, or closed SRs.
+- The app keeps local filter and selection preferences so operators can return to the same working context quickly.
