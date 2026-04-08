@@ -19,7 +19,7 @@ This app is separate from `ops-hub` on purpose:
 Queue-first overview of open requests, case-stage distribution, ownership pressure, and quick jumps into active work.
 
 - `Cases`
-Case-first workspace for ordering, ETA, tracking, receipt, readiness handoff, linked request context, and timeline review.
+Case-first workspace for ordering, ETA, tracking, receipt, readiness handoff, linked request context, and timeline review. Cases now also show the underlying BlueFolder SR status plus normalized `serviceRequestStatusMeta` so operators can tell whether a case is still active because the SR is truly parts-related versus closed, quote-blocked, or waiting on customer follow-up.
 
 - `Requests`
 Tracked request queue with claim/unclaim/status actions and direct linkage back to the owning case.

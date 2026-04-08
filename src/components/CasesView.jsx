@@ -85,6 +85,7 @@ export default function CasesView({
               <p>{item.nextAction || item.latestStatusText || "No next action text yet."}</p>
               <div className="attention-card-meta">
                 <span>Status: {item.status}</span>
+                <span>SR: {item.serviceRequestStatus || "unknown"}</span>
                 <span>Age: {item.ageBucket || "n/a"}</span>
                 <span>Owner: {item.assignedPartsLabel || "unassigned"}</span>
               </div>
@@ -141,6 +142,8 @@ function CaseDetail({ detail, loading, actionState, onCaseAction, onOpenRequests
 
       <div className="detail-grid">
         <Detail label="Status" value={item.status} />
+        <Detail label="SR status" value={item.serviceRequestStatus || "unknown"} />
+        <Detail label="SR category" value={item.serviceRequestStatusMeta?.categoryLabel || "Other"} />
         <Detail label="Assigned" value={item.assignedPartsLabel || "unassigned"} />
         <Detail label="Technician" value={item.technicianLabel || "n/a"} />
         <Detail label="Age" value={item.ageBucket || "n/a"} />
@@ -154,6 +157,7 @@ function CaseDetail({ detail, loading, actionState, onCaseAction, onOpenRequests
       <div className="detail-block">
         <strong>Next action</strong>
         <p>{item.nextAction || "No next action yet."}</p>
+        <p className="muted">{describeStatusMeta(item.serviceRequestStatusMeta)}</p>
         {item.blocker && <p className="error-text">Blocker: {item.blocker}</p>}
         {item.latestIssueText && <p className="muted">Issue: {item.latestIssueText}</p>}
         {item.latestStatusText && <p className="muted">Latest status: {item.latestStatusText}</p>}
@@ -267,4 +271,15 @@ function Detail({ label, value }) {
       <strong>{value || "n/a"}</strong>
     </div>
   );
+}
+
+function describeStatusMeta(meta) {
+  if (!meta || typeof meta !== "object") return "No BlueFolder SR status classification loaded.";
+  if (meta.isClosed) return "This case should drop out once tracked parts work is cleared, because the SR is already closed or completed.";
+  if (meta.isActiveParts) return "This SR is still in a tenant status that clearly reflects active parts work.";
+  if (meta.isQuoteNeeded) return "This SR is blocked on quote approval, so parts may not be the only blocker.";
+  if (meta.isWaitingCustomer) return "This SR is waiting on customer-side follow-up rather than a pure parts step.";
+  if (meta.isScheduling) return "This SR is in a scheduling state, so confirm the parts loop is really still active.";
+  if (meta.isReview) return "This SR is in a review or triage state, so office follow-up may be the real blocker.";
+  return "This SR status does not currently map to a stronger parts-specific rule.";
 }
