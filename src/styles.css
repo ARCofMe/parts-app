@@ -89,6 +89,11 @@ button, input { font: inherit; }
   font-family: "Fraunces", "Georgia", serif;
 }
 
+.brand-bar h1 {
+  font-size: clamp(1.82rem, 3.5vw, 2.7rem);
+  line-height: 1.02;
+}
+
 .brand-kicker,
 .section-kicker {
   margin: 0 0 6px;
