@@ -4,8 +4,6 @@ const REQUESTS_FILTER_KEY = "requests";
 export default function SettingsView({
   themeMode,
   onThemeModeChange,
-  appName,
-  onAppNameChange,
   preferences,
   onPreferencesChange,
   onClearSavedState,
@@ -19,16 +17,6 @@ export default function SettingsView({
       </div>
 
       <div className="settings-grid">
-        <article className="metric-card wide">
-          <p>Branding</p>
-          <div className="detail-grid">
-            <label className="field">
-              <span>App name</span>
-              <input value={appName} onChange={(event) => onAppNameChange(event.target.value)} placeholder="PartsDesk" />
-            </label>
-          </div>
-        </article>
-
         <article className="metric-card wide">
           <p>Appearance</p>
           <div className="theme-toggle-row">

@@ -159,4 +159,17 @@ describe("Parts App", () => {
       expect(partsApiMock.getCases).toHaveBeenCalledWith({ status: "open" });
     });
   });
+
+  it("clears the legacy app-name override and keeps the PartsDesk title fixed", async () => {
+    window.localStorage.setItem("parts-app-name", "Custom Parts");
+    partsApiMock.getBoard.mockResolvedValue({ queueSummary: {}, caseMetrics: {}, openCases: [], openTrackedRequests: [] });
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(partsApiMock.getBoard).toHaveBeenCalledTimes(1);
+    });
+    expect(window.localStorage.getItem("parts-app-name")).toBeNull();
+    expect(document.title).toBe("PartsDesk | ARCoM Ops Hub");
+  });
 });

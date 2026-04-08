@@ -25,7 +25,7 @@ Case-first workspace for ordering, ETA, tracking, receipt, readiness handoff, li
 Tracked request queue with claim/unclaim/status actions and direct linkage back to the owning case.
 
 - `Settings`
-Local operator preferences for theme, app name, saved filters, and restoring the last case/request context.
+Local operator preferences for theme, saved filters, and restoring the last case/request context.
 
 ## Environment
 
@@ -61,7 +61,7 @@ npm test
 ## Current status
 
 This app now has the same baseline operator polish level as the dispatch app:
-- app name and theme are operator-configurable
+- PartsDesk branding is fixed; theme is operator-configurable
 - light and dark mode are both supported
 - case/request filters can be persisted locally
 - the last selected case/request can be remembered and restored on launch

@@ -8,11 +8,10 @@ import RequestsView from "./components/RequestsView";
 import SettingsView from "./components/SettingsView";
 
 const THEME_MODE_KEY = "parts-theme-mode";
-const APP_NAME_KEY = "parts-app-name";
 const PARTS_PREFERENCES_KEY = "parts-preferences";
 const LAST_CASE_KEY = "parts-last-case";
 const LAST_REQUEST_KEY = "parts-last-request";
-const DEFAULT_APP_NAME = "PartsDesk";
+const APP_NAME_KEY = "parts-app-name";
 const DEFAULT_PREFERENCES = {
   caseFilters: { stage: "", age: "", status: "", reference: "" },
   requestFilters: { status: "", assignedPartsLabel: "", reference: "", caseStageLabel: "" },
@@ -48,7 +47,6 @@ export default function App() {
   const [selectedRequestDetail, setSelectedRequestDetail] = useState(null);
   const [requestDetailLoading, setRequestDetailLoading] = useState(false);
   const [themeMode, setThemeMode] = useState(() => window.localStorage.getItem(THEME_MODE_KEY) || "light");
-  const [appName, setAppName] = useState(() => window.localStorage.getItem(APP_NAME_KEY) || DEFAULT_APP_NAME);
   const [preferences, setPreferences] = useState(() => readStoredPreferences());
 
   useEffect(() => {
@@ -63,10 +61,9 @@ export default function App() {
   }, [themeMode]);
 
   useEffect(() => {
-    const nextName = appName.trim() || DEFAULT_APP_NAME;
-    window.localStorage.setItem(APP_NAME_KEY, nextName);
-    document.title = `${nextName} | ARCoM Ops Hub`;
-  }, [appName]);
+    window.localStorage.removeItem(APP_NAME_KEY);
+    document.title = "PartsDesk | ARCoM Ops Hub";
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem(PARTS_PREFERENCES_KEY, JSON.stringify(preferences));
@@ -280,7 +277,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <BrandBar appName={appName.trim() || DEFAULT_APP_NAME} />
+      <BrandBar appName="PartsDesk" />
       <TabNav activeTab={activeTab} onSelect={setActiveTab} />
 
       {activeTab === "board" && (
@@ -337,8 +334,6 @@ export default function App() {
         <SettingsView
           themeMode={themeMode}
           onThemeModeChange={setThemeMode}
-          appName={appName}
-          onAppNameChange={setAppName}
           preferences={preferences}
           onPreferencesChange={setPreferences}
           onClearSavedState={clearSavedState}
