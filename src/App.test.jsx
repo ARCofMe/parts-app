@@ -227,6 +227,7 @@ describe("Parts App", () => {
     window.localStorage.setItem(
       "parts-workspace-links",
       JSON.stringify({
+        opsHubUrl: "ops.example.com",
         routeDeskUrl: "https://route.example.com",
         partsAppUrl: "https://parts.example.com",
         fieldDeskUrl: "javascript:alert(1)",
@@ -236,7 +237,8 @@ describe("Parts App", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("link", { name: "Open RouteDesk" })).toHaveAttribute("href", "https://route.example.com");
+    expect(await screen.findByRole("link", { name: "Open OpsHub" })).toHaveAttribute("href", "https://ops.example.com/");
+    expect(await screen.findByRole("link", { name: "Open RouteDesk" })).toHaveAttribute("href", "https://route.example.com/");
     expect(screen.queryByRole("link", { name: "Open FieldDesk" })).not.toBeInTheDocument();
   });
 

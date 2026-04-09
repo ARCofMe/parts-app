@@ -23,6 +23,7 @@ const DEFAULT_PREFERENCES = {
   restoreLastRequestOnLaunch: false,
 };
 const DEFAULT_WORKSPACE_LINKS = {
+  opsHubUrl: import.meta.env.VITE_OPSHUB_URL || "",
   routeDeskUrl: import.meta.env.VITE_ROUTEDESK_URL || "",
   partsAppUrl: import.meta.env.VITE_PARTSAPP_URL || "",
   fieldDeskUrl: import.meta.env.VITE_FIELDDESK_URL || "",
@@ -31,6 +32,7 @@ const DEFAULT_WORKSPACE_LINKS = {
 function normalizeWorkspaceLinks(links) {
   const source = links && typeof links === "object" ? links : {};
   return {
+    opsHubUrl: sanitizeWorkspaceUrl(source.opsHubUrl ?? DEFAULT_WORKSPACE_LINKS.opsHubUrl),
     routeDeskUrl: sanitizeWorkspaceUrl(source.routeDeskUrl ?? DEFAULT_WORKSPACE_LINKS.routeDeskUrl),
     partsAppUrl: sanitizeWorkspaceUrl(source.partsAppUrl ?? DEFAULT_WORKSPACE_LINKS.partsAppUrl),
     fieldDeskUrl: sanitizeWorkspaceUrl(source.fieldDeskUrl ?? DEFAULT_WORKSPACE_LINKS.fieldDeskUrl),
@@ -40,8 +42,13 @@ function normalizeWorkspaceLinks(links) {
 function sanitizeWorkspaceUrl(value) {
   const trimmed = String(value || "").trim();
   if (!trimmed) return "";
-  if (/^https?:\/\//i.test(trimmed)) return trimmed;
-  return "";
+  const normalized = /^[a-z][a-z\d+\-.]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const parsed = new URL(normalized);
+    return /^https?:$/i.test(parsed.protocol) && parsed.host ? parsed.toString() : "";
+  } catch {
+    return "";
+  }
 }
 
 function resolveThemeMode(themeMode) {

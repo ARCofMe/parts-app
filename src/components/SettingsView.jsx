@@ -122,11 +122,19 @@ export default function SettingsView({
           <p>Ecosystem links</p>
           <div className="settings-grid">
             <label className="field">
+              <span>OpsHub URL</span>
+              <input
+                value={workspaceLinks?.opsHubUrl || ""}
+                onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, opsHubUrl: event.target.value })}
+                placeholder="ops.example.com"
+              />
+            </label>
+            <label className="field">
               <span>RouteDesk URL</span>
               <input
                 value={workspaceLinks?.routeDeskUrl || ""}
                 onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, routeDeskUrl: event.target.value })}
-                placeholder="https://route.example.com"
+                placeholder="route.example.com"
               />
             </label>
             <label className="field">
@@ -134,7 +142,7 @@ export default function SettingsView({
               <input
                 value={workspaceLinks?.partsAppUrl || ""}
                 onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, partsAppUrl: event.target.value })}
-                placeholder="https://parts.example.com"
+                placeholder="parts.example.com"
               />
             </label>
             <label className="field">
@@ -142,10 +150,11 @@ export default function SettingsView({
               <input
                 value={workspaceLinks?.fieldDeskUrl || ""}
                 onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, fieldDeskUrl: event.target.value })}
-                placeholder="https://field.example.com"
+                placeholder="field.example.com"
               />
             </label>
           </div>
+          <p className="muted">Bare domains are normalized to `https://`. Invalid or unsafe URLs stay hidden.</p>
         </article>
       </div>
     </section>
