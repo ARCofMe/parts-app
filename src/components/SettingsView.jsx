@@ -12,7 +12,7 @@ export default function SettingsView({
   workspaceLinks,
   onWorkspaceLinksChange,
 }) {
-  const ecosystemStatus = getWorkspaceLinkStatus(workspaceLinks, "partsApp");
+  const ecosystemStatus = getWorkspaceLinkStatus(workspaceLinks, "partsDesk");
   const configuredCount = ecosystemStatus.filter((item) => item.configured).length;
 
   return (
@@ -130,14 +130,6 @@ export default function SettingsView({
           </p>
           <div className="settings-grid">
             <label className="field">
-              <span>OpsHub URL</span>
-              <input
-                value={workspaceLinks?.opsHubUrl || ""}
-                onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, opsHubUrl: event.target.value })}
-                placeholder="ops.example.com"
-              />
-            </label>
-            <label className="field">
               <span>RouteDesk URL</span>
               <input
                 value={workspaceLinks?.routeDeskUrl || ""}
@@ -146,7 +138,7 @@ export default function SettingsView({
               />
             </label>
             <label className="field">
-              <span>PartsApp URL</span>
+              <span>PartsDesk URL</span>
               <input
                 value={workspaceLinks?.partsAppUrl || ""}
                 onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, partsAppUrl: event.target.value })}

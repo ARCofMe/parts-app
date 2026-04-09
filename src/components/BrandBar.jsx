@@ -1,6 +1,6 @@
 import { getWorkspaceLinkStatus } from "../workspaceLinks";
 
-export default function BrandBar({ appName = "PartsApp", workspaceLinks = {}, currentApp = "partsApp" }) {
+export default function BrandBar({ appName = "PartsDesk", workspaceLinks = {}, currentApp = "partsDesk" }) {
   const workspaces = getWorkspaceLinkStatus(workspaceLinks, currentApp);
 
   return (

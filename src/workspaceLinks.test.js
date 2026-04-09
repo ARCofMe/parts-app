@@ -14,11 +14,10 @@ describe("workspaceLinks", () => {
   it("normalizes the full workspace link payload against defaults", () => {
     expect(
       normalizeWorkspaceLinks(
-        { opsHubUrl: "ops.example.com", routeDeskUrl: "https://route.example.com", partsAppUrl: "bad url" },
+        { routeDeskUrl: "https://route.example.com", partsAppUrl: "bad url" },
         { fieldDeskUrl: "field.example.com" },
       ),
     ).toEqual({
-      opsHubUrl: "https://ops.example.com/",
       routeDeskUrl: "https://route.example.com/",
       partsAppUrl: "",
       fieldDeskUrl: "https://field.example.com/",
@@ -27,17 +26,17 @@ describe("workspaceLinks", () => {
 
   it("reports ecosystem status for presentation surfaces", () => {
     const status = getWorkspaceLinkStatus(
-      { opsHubUrl: "ops.example.com", routeDeskUrl: "https://route.example.com" },
-      "partsApp",
+      { routeDeskUrl: "https://route.example.com" },
+      "partsDesk",
     );
-    expect(status.find((item) => item.appKey === "opsHub")).toMatchObject({
-      configured: true,
-      href: "https://ops.example.com/",
-      current: false,
-    });
-    expect(status.find((item) => item.appKey === "partsApp")).toMatchObject({
+    expect(status.find((item) => item.appKey === "partsDesk")).toMatchObject({
       configured: false,
       current: true,
+    });
+    expect(status.find((item) => item.appKey === "routeDesk")).toMatchObject({
+      configured: true,
+      href: "https://route.example.com/",
+      current: false,
     });
   });
 });

@@ -92,7 +92,7 @@ export default function App() {
 
   useEffect(() => {
     window.localStorage.removeItem(APP_NAME_KEY);
-    document.title = "PartsApp | OpsHub";
+    document.title = "PartsDesk | OpsHub";
   }, []);
 
   useEffect(() => {
@@ -383,7 +383,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <BrandBar appName="PartsApp" workspaceLinks={workspaceLinks} currentApp="partsApp" />
+      <BrandBar appName="PartsDesk" workspaceLinks={workspaceLinks} currentApp="partsDesk" />
       <TabNav activeTab={activeTab} onSelect={setActiveTab} />
 
       {activeTab === "board" && (

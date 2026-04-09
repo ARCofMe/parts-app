@@ -18,7 +18,6 @@ describe("SettingsView", () => {
         onPreferencesChange={vi.fn()}
         onClearSavedState={vi.fn()}
         workspaceLinks={{
-          opsHubUrl: "ops.example.com",
           routeDeskUrl: "route.example.com",
           partsAppUrl: "",
           fieldDeskUrl: "",
@@ -27,9 +26,8 @@ describe("SettingsView", () => {
       />,
     );
 
-    expect(screen.getByText("2 of 4 workspaces configured.")).toBeInTheDocument();
+    expect(screen.getByText("1 of 3 workspaces configured.")).toBeInTheDocument();
     expect(screen.getByText("Current app")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Open OpsHub" })).toHaveAttribute("href", "https://ops.example.com/");
     expect(screen.getByRole("link", { name: "Open RouteDesk" })).toHaveAttribute("href", "https://route.example.com/");
   });
 });
