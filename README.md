@@ -55,6 +55,13 @@ Run tests:
 npm test
 ```
 
+For presentation-friendly cross-app launchers, seed these in `.env.local`:
+
+- `VITE_OPSHUB_URL`
+- `VITE_ROUTEDESK_URL`
+- `VITE_PARTSAPP_URL`
+- `VITE_FIELDDESK_URL`
+
 ## Notes
 
 - PartsDesk depends on Ops Hub for case, request, and BlueFolder-derived status data.
