@@ -1,3 +1,5 @@
+import { getWorkspaceLinkStatus } from "../workspaceLinks";
+
 const CASES_FILTER_KEY = "cases";
 const REQUESTS_FILTER_KEY = "requests";
 
@@ -10,6 +12,9 @@ export default function SettingsView({
   workspaceLinks,
   onWorkspaceLinksChange,
 }) {
+  const ecosystemStatus = getWorkspaceLinkStatus(workspaceLinks, "partsApp");
+  const configuredCount = ecosystemStatus.filter((item) => item.configured).length;
+
   return (
     <section className="panel settings-layout">
       <div>
@@ -120,6 +125,9 @@ export default function SettingsView({
 
         <article className="metric-card wide">
           <p>Ecosystem links</p>
+          <p className="muted">
+            {configuredCount} of {ecosystemStatus.length} workspaces configured.
+          </p>
           <div className="settings-grid">
             <label className="field">
               <span>OpsHub URL</span>
@@ -155,6 +163,19 @@ export default function SettingsView({
             </label>
           </div>
           <p className="muted">Bare domains are normalized to `https://`. Invalid or unsafe URLs stay hidden.</p>
+          <div className="settings-grid">
+            {ecosystemStatus.map((item) => (
+              <div key={item.appKey} className="detail-value">
+                <span>{item.label}</span>
+                <strong>{item.current ? "Current app" : item.configured ? "Ready" : "Missing"}</strong>
+                {item.href && !item.current ? (
+                  <a className="button-link secondary-button" href={item.href} target="_blank" rel="noreferrer">
+                    Open {item.label}
+                  </a>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </article>
       </div>
     </section>
