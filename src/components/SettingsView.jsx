@@ -14,6 +14,17 @@ export default function SettingsView({
 }) {
   const ecosystemStatus = getWorkspaceLinkStatus(workspaceLinks, "partsDesk");
   const configuredCount = ecosystemStatus.filter((item) => item.configured).length;
+  const preflightChecks = [
+    { label: "RouteDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "routeDesk")?.configured) },
+    { label: "FieldDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "fieldDesk")?.configured) },
+    { label: "Remember last case", ready: Boolean(preferences.rememberLastCase) },
+    { label: "Restore last case on launch", ready: Boolean(preferences.restoreLastCaseOnLaunch) },
+    { label: "Persist case filters", ready: Boolean(preferences.persistFilters[CASES_FILTER_KEY]) },
+    { label: "Persist request filters", ready: Boolean(preferences.persistFilters[REQUESTS_FILTER_KEY]) },
+  ];
+  const criticalChecks = preflightChecks.filter((item) => item.label !== "Remember last case");
+  const readyCount = preflightChecks.filter((item) => item.ready).length;
+  const isPresentationReady = criticalChecks.every((item) => item.ready);
 
   return (
     <section className="panel settings-layout">
@@ -24,6 +35,41 @@ export default function SettingsView({
       </div>
 
       <div className="settings-grid">
+        <article className="metric-card wide">
+          <p className="section-kicker">Presentation preflight</p>
+          <h2 className="settings-title">Readiness</h2>
+          <p className="settings-copy">
+            Check the parts workspace before you present it. This surfaces missing sibling launchers and unstable
+            session-memory settings before they turn into live demo friction.
+          </p>
+          <div className="settings-grid">
+            <div className="detail-value">
+              <span>Overall status</span>
+              <strong>{isPresentationReady ? "Ready for presentation" : "Needs attention"}</strong>
+            </div>
+            <div className="detail-value">
+              <span>Checks passed</span>
+              <strong>{readyCount} / {preflightChecks.length}</strong>
+            </div>
+            <div className="detail-value">
+              <span>Sibling apps</span>
+              <strong>{configuredCount} / {ecosystemStatus.length - 1} linked</strong>
+            </div>
+            <div className="detail-value">
+              <span>Case restore</span>
+              <strong>{preferences.restoreLastCaseOnLaunch ? "Enabled" : "Disabled"}</strong>
+            </div>
+          </div>
+          <div className="settings-grid">
+            {preflightChecks.map((item) => (
+              <div key={item.label} className="detail-value">
+                <span>{item.label}</span>
+                <strong>{item.ready ? "Ready" : "Missing"}</strong>
+              </div>
+            ))}
+          </div>
+        </article>
+
         <article className="metric-card wide">
           <p>Appearance</p>
           <div className="theme-toggle-row">

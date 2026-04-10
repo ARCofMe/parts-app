@@ -29,5 +29,9 @@ describe("SettingsView", () => {
     expect(screen.getByText("1 of 3 workspaces configured.")).toBeInTheDocument();
     expect(screen.getByText("Current app")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open RouteDesk" })).toHaveAttribute("href", "https://route.example.com/");
+    expect(screen.getByText("Needs attention")).toBeInTheDocument();
+    expect(screen.getByText("4 / 6")).toBeInTheDocument();
+    expect(screen.getByText("FieldDesk launcher ready")).toBeInTheDocument();
+    expect(screen.getAllByText("Missing").length).toBeGreaterThan(0);
   });
 });
