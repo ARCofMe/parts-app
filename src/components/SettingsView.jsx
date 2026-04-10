@@ -14,6 +14,8 @@ export default function SettingsView({
 }) {
   const ecosystemStatus = getWorkspaceLinkStatus(workspaceLinks, "partsDesk");
   const configuredCount = ecosystemStatus.filter((item) => item.configured).length;
+  const siblingStatus = ecosystemStatus.filter((item) => !item.current);
+  const configuredSiblingCount = siblingStatus.filter((item) => item.configured).length;
   const preflightChecks = [
     { label: "RouteDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "routeDesk")?.configured) },
     { label: "FieldDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "fieldDesk")?.configured) },
@@ -53,7 +55,7 @@ export default function SettingsView({
             </div>
             <div className="detail-value">
               <span>Sibling apps</span>
-              <strong>{configuredCount} / {ecosystemStatus.length - 1} linked</strong>
+              <strong>{configuredSiblingCount} / {siblingStatus.length} linked</strong>
             </div>
             <div className="detail-value">
               <span>Case restore</span>

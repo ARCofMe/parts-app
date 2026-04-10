@@ -27,6 +27,7 @@ describe("SettingsView", () => {
     );
 
     expect(screen.getByText("1 of 3 workspaces configured.")).toBeInTheDocument();
+    expect(screen.getByText("1 / 2 linked")).toBeInTheDocument();
     expect(screen.getByText("Current app")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open RouteDesk" })).toHaveAttribute("href", "https://route.example.com/");
     expect(screen.getByText("Needs attention")).toBeInTheDocument();
