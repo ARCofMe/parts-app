@@ -8,6 +8,8 @@ export default function SettingsView({
   onThemeModeChange,
   preferences,
   onPreferencesChange,
+  partsUserId,
+  onPartsUserIdChange,
   onClearSavedState,
   workspaceLinks,
   onWorkspaceLinksChange,
@@ -73,6 +75,24 @@ export default function SettingsView({
           </div>
           <p className="muted">
             Next fixes: {missingChecks.length > 0 ? missingChecks.map((item) => item.label).join(", ") : "none"}
+          </p>
+        </article>
+
+        <article className="metric-card wide">
+          <p>Operator identity</p>
+          <div className="settings-grid">
+            <label className="field">
+              <span>Parts user ID</span>
+              <input
+                value={partsUserId || ""}
+                onChange={(event) => onPartsUserIdChange?.(event.target.value)}
+                placeholder="Your parts/admin user ID"
+              />
+            </label>
+          </div>
+          <p className="muted">
+            Stored per browser under <code>partsdesk-parts-user-id</code>. Do not bake one parts operator into a
+            shared production bundle.
           </p>
         </article>
 

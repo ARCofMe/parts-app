@@ -1,6 +1,7 @@
 const API_BASE = (import.meta.env.VITE_OPS_HUB_API_BASE || "http://127.0.0.1:8787").replace(/\/$/, "");
 const API_TOKEN = import.meta.env.VITE_OPS_HUB_API_TOKEN || "";
-const PARTS_USER_ID = import.meta.env.VITE_PARTS_USER_ID || "";
+export const PARTS_USER_ID_STORAGE_KEY = "partsdesk-parts-user-id";
+const DEFAULT_PARTS_USER_ID = import.meta.env.VITE_PARTS_USER_ID || "";
 const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_OPS_HUB_API_TIMEOUT_MS || 15000);
 const PARTS_READ_TIMEOUT_MS = Number(import.meta.env.VITE_OPS_HUB_PARTS_READ_TIMEOUT_MS || 90000);
 
@@ -15,7 +16,7 @@ async function request(path, options = {}) {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${API_TOKEN}`,
-        "X-Parts-Subject": PARTS_USER_ID,
+        "X-Parts-Subject": getPartsUserId(),
         ...(hasBody ? { "Content-Type": "application/json" } : {}),
         ...(options.headers || {}),
       },
@@ -88,6 +89,21 @@ export const partsApi = {
     return request("/parts/requests/reconcile", { method: "POST" });
   },
 };
+
+export function getPartsUserId() {
+  const stored = window.localStorage.getItem(PARTS_USER_ID_STORAGE_KEY);
+  return (stored || DEFAULT_PARTS_USER_ID || "").trim();
+}
+
+export function setPartsUserId(value) {
+  const cleaned = `${value || ""}`.trim();
+  if (cleaned) {
+    window.localStorage.setItem(PARTS_USER_ID_STORAGE_KEY, cleaned);
+  } else {
+    window.localStorage.removeItem(PARTS_USER_ID_STORAGE_KEY);
+  }
+  return cleaned;
+}
 
 function parsePayload(text) {
   if (!text) return null;

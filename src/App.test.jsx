@@ -15,6 +15,16 @@ const { partsApiMock } = vi.hoisted(() => ({
 
 vi.mock("./api/client", () => ({
   partsApi: partsApiMock,
+  getPartsUserId: () => window.localStorage.getItem("partsdesk-parts-user-id") || "",
+  setPartsUserId: (value) => {
+    const cleaned = `${value || ""}`.trim();
+    if (cleaned) {
+      window.localStorage.setItem("partsdesk-parts-user-id", cleaned);
+    } else {
+      window.localStorage.removeItem("partsdesk-parts-user-id");
+    }
+    return cleaned;
+  },
 }));
 
 describe("Parts App", () => {

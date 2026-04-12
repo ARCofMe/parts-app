@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { partsApi } from "./api/client";
+import { getPartsUserId, partsApi, setPartsUserId } from "./api/client";
 import BrandBar from "./components/BrandBar";
 import TabNav from "./components/TabNav";
 import BoardView from "./components/BoardView";
@@ -65,6 +65,7 @@ export default function App() {
   const [selectedRequestDetail, setSelectedRequestDetail] = useState(null);
   const [requestDetailLoading, setRequestDetailLoading] = useState(false);
   const [themeMode, setThemeMode] = useState(() => window.localStorage.getItem(THEME_MODE_KEY) || "dark");
+  const [partsUserId, setPartsUserIdState] = useState(() => getPartsUserId());
   const [preferences, setPreferences] = useState(() => readStoredPreferences());
   const [workspaceLinks, setWorkspaceLinks] = useState(() => readStoredWorkspaceLinks());
 
@@ -443,6 +444,8 @@ export default function App() {
           onThemeModeChange={setThemeMode}
           preferences={preferences}
           onPreferencesChange={setPreferences}
+          partsUserId={partsUserId}
+          onPartsUserIdChange={(value) => setPartsUserIdState(setPartsUserId(value))}
           onClearSavedState={clearSavedState}
           workspaceLinks={workspaceLinks}
           onWorkspaceLinksChange={(value) => setWorkspaceLinks(normalizeWorkspaceLinks(value))}

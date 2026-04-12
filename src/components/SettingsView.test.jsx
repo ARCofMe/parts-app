@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import SettingsView from "./SettingsView";
 
@@ -16,6 +16,8 @@ describe("SettingsView", () => {
           persistFilters: { cases: true, requests: true },
         }}
         onPreferencesChange={vi.fn()}
+        partsUserId="42"
+        onPartsUserIdChange={vi.fn()}
         onClearSavedState={vi.fn()}
         workspaceLinks={{
           routeDeskUrl: "route.example.com",
@@ -35,5 +37,32 @@ describe("SettingsView", () => {
     expect(screen.getByText("FieldDesk launcher ready")).toBeInTheDocument();
     expect(screen.getByText("Next fixes: FieldDesk launcher ready, Restore last case on launch")).toBeInTheDocument();
     expect(screen.getAllByText("Missing").length).toBeGreaterThan(0);
+  });
+
+  it("edits the per-browser parts user id from settings", () => {
+    const onPartsUserIdChange = vi.fn();
+    render(
+      <SettingsView
+        themeMode="dark"
+        onThemeModeChange={vi.fn()}
+        preferences={{
+          rememberLastCase: true,
+          restoreLastCaseOnLaunch: false,
+          rememberLastRequest: true,
+          restoreLastRequestOnLaunch: false,
+          persistFilters: { cases: true, requests: true },
+        }}
+        onPreferencesChange={vi.fn()}
+        partsUserId=""
+        onPartsUserIdChange={onPartsUserIdChange}
+        onClearSavedState={vi.fn()}
+        workspaceLinks={{ routeDeskUrl: "", partsAppUrl: "", fieldDeskUrl: "" }}
+        onWorkspaceLinksChange={vi.fn()}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Parts user ID"), { target: { value: "parts-42" } });
+
+    expect(onPartsUserIdChange).toHaveBeenCalledWith("parts-42");
   });
 });
