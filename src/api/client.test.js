@@ -53,9 +53,21 @@ describe("partsApi client", () => {
       }),
     );
 
-    await expect(partsApi.getBoard()).rejects.toThrow(
-      "Parts or admin identity could not be resolved. Check the OpsHub parts/admin operator allowlist.",
+    await expect(partsApi.getBoard()).rejects.toThrow("partsdesk-parts-user-id browser setting.");
+  });
+
+  it("includes the sent parts operator id in 403 responses", async () => {
+    setPartsUserId("wrong-parts");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 403,
+        text: () => Promise.resolve(JSON.stringify({ success: false, message: "Parts or admin identity could not be resolved." })),
+      }),
     );
+
+    await expect(partsApi.getBoard()).rejects.toThrow('Sent operator ID "wrong-parts".');
   });
 
   it("uses the extended read timeout for parts board requests", async () => {

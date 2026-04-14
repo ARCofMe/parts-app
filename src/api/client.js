@@ -122,6 +122,12 @@ function buildErrorMessage(status, payload, text) {
     `HTTP ${status}`;
 
   if (status === 401) return `${message} Check the Ops Hub API token.`;
-  if (status === 403) return `${message} Check the OpsHub parts/admin operator allowlist.`;
+  if (status === 403) return `${message} ${buildPartsIdentityHint()}`;
   return message;
+}
+
+function buildPartsIdentityHint() {
+  const current = getPartsUserId();
+  const identity = current ? `Sent operator ID "${current}".` : "No PartsDesk operator ID is set in this browser.";
+  return `${identity} Check the OpsHub parts/admin operator allowlist and the ${PARTS_USER_ID_STORAGE_KEY} browser setting.`;
 }
