@@ -15,6 +15,7 @@ export default function BoardView({
 
   const summary = board.queueSummary || {};
   const metrics = board.caseMetrics || {};
+  const briefItems = fulfillmentBrief(board);
 
   return (
     <section className="panel board-layout">
@@ -32,6 +33,27 @@ export default function BoardView({
 
       {error && <p className="error-text">{error}</p>}
       {syncState && <p className={syncState.error ? "error-text" : "muted"}>{syncState.message}</p>}
+
+      <div className="board-grid secondary">
+        <article className="metric-card wide command-brief">
+          <div className="section-head compact">
+            <div>
+              <p className="section-kicker">Parts fulfillment brief</p>
+              <h2>Clear the blockers first</h2>
+            </div>
+            <button type="button" onClick={onOpenCases}>Open cases</button>
+          </div>
+          <div className="brief-grid">
+            {briefItems.map((item) => (
+              <div key={item.label} className="brief-card">
+                <span>{item.label}</span>
+                <strong>{item.value}</strong>
+                <p>{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </article>
+      </div>
 
       <div className="board-grid">
         <Metric label="Total requests" value={summary.totalRequests} />
@@ -114,6 +136,58 @@ export default function BoardView({
       </div>
     </section>
   );
+}
+
+function fulfillmentBrief(board) {
+  const summary = board?.queueSummary || {};
+  const metrics = board?.caseMetrics || {};
+  const topCase = board?.openCases?.[0];
+  const topRequest = board?.openTrackedRequests?.[0];
+  const stageCounts = Object.entries(metrics.stageCounts || {}).sort((left, right) => Number(right[1] || 0) - Number(left[1] || 0));
+  const hotStage = stageCounts[0];
+  const items = [];
+
+  if (Number(summary.unassignedRequests || 0) > 0) {
+    items.push({
+      label: "Unassigned",
+      value: String(summary.unassignedRequests),
+      detail: "Claim or assign these before they disappear into the queue.",
+    });
+  }
+
+  if (topCase) {
+    items.push({
+      label: "First case",
+      value: topCase.reference,
+      detail: topCase.nextAction || topCase.latestStatusText || topCase.stageLabel || "Open case",
+    });
+  }
+
+  if (hotStage) {
+    items.push({
+      label: "Hot stage",
+      value: hotStage[0].replaceAll("_", " "),
+      detail: `${hotStage[1]} case${Number(hotStage[1]) === 1 ? "" : "s"} in this stage`,
+    });
+  }
+
+  if (topRequest) {
+    items.push({
+      label: "Next request",
+      value: `#${topRequest.requestId}`,
+      detail: `${topRequest.reference || "No SR"} · ${topRequest.description || topRequest.status || "Open request"}`,
+    });
+  }
+
+  if (!items.length) {
+    items.push({
+      label: "Queue state",
+      value: "Clean",
+      detail: "No open request or case blockers detected.",
+    });
+  }
+
+  return items.slice(0, 4);
 }
 
 function Metric({ label, value }) {

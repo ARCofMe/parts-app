@@ -53,6 +53,12 @@ describe("BoardView", () => {
     );
 
     expect(screen.getByText("Total requests")).toBeInTheDocument();
+    expect(screen.getByText("Parts fulfillment brief")).toBeInTheDocument();
+    expect(screen.getByText("Clear the blockers first")).toBeInTheDocument();
+    expect(screen.getByText("Unassigned")).toBeInTheDocument();
+    expect(screen.getByText("First case")).toBeInTheDocument();
+    expect(screen.getByText("Hot stage")).toBeInTheDocument();
+    expect(screen.getByText("Next request")).toBeInTheDocument();
     expect(screen.getByText("9")).toBeInTheDocument();
     expect(screen.getByText("part ordered: 2")).toBeInTheDocument();
     expect(screen.getByText("Assigned: 2")).toBeInTheDocument();
