@@ -457,6 +457,80 @@ button, input { font: inherit; }
   flex-wrap: wrap;
 }
 
+.icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex: 0 0 auto;
+  color: currentColor;
+}
+
+.brand-identity {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.brand-mark-card {
+  display: grid;
+  width: 74px;
+  height: 74px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, var(--panel-border));
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--accent) 36%, transparent), transparent 36%),
+    linear-gradient(145deg, rgba(34, 197, 94, 0.18), rgba(15, 23, 42, 0.8));
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.brand-mark-icon {
+  width: 42px;
+  height: 42px;
+  color: var(--accent);
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--accent) 38%, transparent));
+}
+
+.status-pill,
+.queue-chip,
+.button-link,
+.tab-button {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pill-icon,
+.button-icon,
+.tab-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.button-icon {
+  margin-right: 2px;
+}
+
+.tab-button {
+  gap: 8px;
+  transition:
+    transform 150ms ease,
+    border-color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.tab-button:hover,
+.button-link:hover {
+  transform: translateY(-1px);
+}
+
+.tab-button:focus-visible,
+.button-link:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 78%, white);
+  outline-offset: 3px;
+}
+
 @media (max-width: 960px) {
   .attention-layout { grid-template-columns: 1fr; }
   .board-columns { grid-template-columns: 1fr; }
@@ -468,6 +542,16 @@ button, input { font: inherit; }
 
 @media (max-width: 640px) {
   .app-shell { padding: 20px 14px 36px; }
+  .brand-identity { align-items: flex-start; }
+  .brand-mark-card {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+  }
+  .brand-mark-icon {
+    width: 34px;
+    height: 34px;
+  }
   .metric-card { grid-column: span 12; }
   .filter-grid { grid-template-columns: 1fr; }
 }
