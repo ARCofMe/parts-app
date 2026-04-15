@@ -91,18 +91,42 @@ export const partsApi = {
 };
 
 export function getPartsUserId() {
-  const stored = window.localStorage.getItem(PARTS_USER_ID_STORAGE_KEY);
+  const stored = readLocalStorage(PARTS_USER_ID_STORAGE_KEY);
   return (stored || DEFAULT_PARTS_USER_ID || "").trim();
 }
 
 export function setPartsUserId(value) {
   const cleaned = `${value || ""}`.trim();
   if (cleaned) {
-    window.localStorage.setItem(PARTS_USER_ID_STORAGE_KEY, cleaned);
+    writeLocalStorage(PARTS_USER_ID_STORAGE_KEY, cleaned);
   } else {
-    window.localStorage.removeItem(PARTS_USER_ID_STORAGE_KEY);
+    removeLocalStorage(PARTS_USER_ID_STORAGE_KEY);
   }
   return cleaned;
+}
+
+function readLocalStorage(key) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return "";
+  }
+}
+
+function writeLocalStorage(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Browser storage can be blocked; keep the UI usable with env/default identity.
+  }
+}
+
+function removeLocalStorage(key) {
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Browser storage can be blocked; clearing should not crash the app.
+  }
 }
 
 function parsePayload(text) {
