@@ -65,4 +65,36 @@ describe("BoardView", () => {
     expect(screen.getByText("Needs parts action")).toBeInTheDocument();
     expect(screen.getByText("Open queue")).toBeInTheDocument();
   });
+
+  it("does not crash when list fields are malformed", () => {
+    render(
+      <BoardView
+        board={{
+          queueSummary: {
+            totalRequests: 0,
+            openRequests: 0,
+            assignedRequests: 0,
+            unassignedRequests: 0,
+            syncedRequests: 0,
+            resolvedCount: 0,
+          },
+          caseMetrics: { stageCounts: {}, assignedCases: 0, unassignedCases: 0 },
+          openCases: { bad: "shape" },
+          openTrackedRequests: { bad: "shape" },
+        }}
+        loading={false}
+        error=""
+        onOpenCases={vi.fn()}
+        onOpenCase={vi.fn()}
+        onOpenRequest={vi.fn()}
+        onSync={vi.fn()}
+        onReconcile={vi.fn()}
+        syncState={null}
+      />
+    );
+
+    expect(screen.getByText("Queue state")).toBeInTheDocument();
+    expect(screen.getByText("No open parts cases right now.")).toBeInTheDocument();
+    expect(screen.getByText("No tracked requests right now.")).toBeInTheDocument();
+  });
 });

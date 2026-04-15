@@ -16,6 +16,8 @@ export default function BoardView({
   const summary = board.queueSummary || {};
   const metrics = board.caseMetrics || {};
   const briefItems = fulfillmentBrief(board);
+  const openCases = asArray(board.openCases);
+  const openTrackedRequests = asArray(board.openTrackedRequests);
 
   return (
     <section className="panel board-layout">
@@ -92,7 +94,7 @@ export default function BoardView({
             <button type="button" onClick={onOpenCases}>View all</button>
           </div>
           <div className="list-stack">
-            {(board.openCases || []).slice(0, 8).map((item) => (
+            {openCases.slice(0, 8).map((item) => (
               <button key={item.caseId} type="button" className="attention-card" onClick={() => onOpenCase?.(item.reference)}>
                 <div className="attention-card-top">
                   <strong>{item.reference}</strong>
@@ -105,7 +107,7 @@ export default function BoardView({
                 </div>
               </button>
             ))}
-            {!(board.openCases || []).length && <p className="muted">No open parts cases right now.</p>}
+            {!openCases.length && <p className="muted">No open parts cases right now.</p>}
           </div>
         </article>
 
@@ -117,7 +119,7 @@ export default function BoardView({
             </div>
           </div>
           <div className="list-stack">
-            {(board.openTrackedRequests || []).slice(0, 8).map((item) => (
+            {openTrackedRequests.slice(0, 8).map((item) => (
               <button key={item.requestId} type="button" className="attention-card" onClick={() => onOpenRequest?.(item.requestId)}>
                 <div className="attention-card-top">
                   <strong>#{item.requestId} {item.reference}</strong>
@@ -130,7 +132,7 @@ export default function BoardView({
                 </div>
               </button>
             ))}
-            {!(board.openTrackedRequests || []).length && <p className="muted">No tracked requests right now.</p>}
+            {!openTrackedRequests.length && <p className="muted">No tracked requests right now.</p>}
           </div>
         </article>
       </div>
@@ -138,11 +140,15 @@ export default function BoardView({
   );
 }
 
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
 function fulfillmentBrief(board) {
   const summary = board?.queueSummary || {};
   const metrics = board?.caseMetrics || {};
-  const topCase = board?.openCases?.[0];
-  const topRequest = board?.openTrackedRequests?.[0];
+  const topCase = asArray(board?.openCases)[0];
+  const topRequest = asArray(board?.openTrackedRequests)[0];
   const stageCounts = Object.entries(metrics.stageCounts || {}).sort((left, right) => Number(right[1] || 0) - Number(left[1] || 0));
   const hotStage = stageCounts[0];
   const items = [];
