@@ -20,6 +20,7 @@ describe("SettingsView", () => {
         onPartsUserIdChange={vi.fn()}
         onClearSavedState={vi.fn()}
         workspaceLinks={{
+          opsHubUrl: "ops.example.com",
           routeDeskUrl: "route.example.com",
           partsAppUrl: "",
           fieldDeskUrl: "",
@@ -28,12 +29,12 @@ describe("SettingsView", () => {
       />,
     );
 
-    expect(screen.getByText("1 of 3 workspaces configured.")).toBeInTheDocument();
-    expect(screen.getByText("1 / 2 linked")).toBeInTheDocument();
+    expect(screen.getByText("2 of 4 workspaces configured.")).toBeInTheDocument();
+    expect(screen.getByText("2 / 3 linked")).toBeInTheDocument();
     expect(screen.getByText("Current app")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open RouteDesk" })).toHaveAttribute("href", "https://route.example.com/");
     expect(screen.getByText("Needs attention")).toBeInTheDocument();
-    expect(screen.getByText("4 / 6")).toBeInTheDocument();
+    expect(screen.getByText("5 / 7")).toBeInTheDocument();
     expect(screen.getByText("FieldDesk launcher ready")).toBeInTheDocument();
     expect(screen.getByText("Next fixes: FieldDesk launcher ready, Restore last case on launch")).toBeInTheDocument();
     expect(screen.getAllByText("Missing").length).toBeGreaterThan(0);
@@ -56,7 +57,7 @@ describe("SettingsView", () => {
         partsUserId=""
         onPartsUserIdChange={onPartsUserIdChange}
         onClearSavedState={vi.fn()}
-        workspaceLinks={{ routeDeskUrl: "", partsAppUrl: "", fieldDeskUrl: "" }}
+        workspaceLinks={{ opsHubUrl: "", routeDeskUrl: "", partsAppUrl: "", fieldDeskUrl: "" }}
         onWorkspaceLinksChange={vi.fn()}
       />,
     );

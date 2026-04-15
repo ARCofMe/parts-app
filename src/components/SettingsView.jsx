@@ -19,6 +19,7 @@ export default function SettingsView({
   const siblingStatus = ecosystemStatus.filter((item) => !item.current);
   const configuredSiblingCount = siblingStatus.filter((item) => item.configured).length;
   const preflightChecks = [
+    { label: "OpsHub launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "opsHub")?.configured) },
     { label: "RouteDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "routeDesk")?.configured) },
     { label: "FieldDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "fieldDesk")?.configured) },
     { label: "Remember last case", ready: Boolean(preferences.rememberLastCase) },
@@ -201,6 +202,14 @@ export default function SettingsView({
             {configuredCount} of {ecosystemStatus.length} workspaces configured.
           </p>
           <div className="settings-grid">
+            <label className="field">
+              <span>OpsHub URL</span>
+              <input
+                value={workspaceLinks?.opsHubUrl || ""}
+                onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, opsHubUrl: event.target.value })}
+                placeholder="ops-hub.org"
+              />
+            </label>
             <label className="field">
               <span>RouteDesk URL</span>
               <input
