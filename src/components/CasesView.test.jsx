@@ -126,6 +126,16 @@ describe("CasesView", () => {
           },
           trackedRequests: [{ requestId: 5, status: "received", description: "Igniter kit" }],
           timeline: { entries: [] },
+          recommendationConversation: {
+            available: true,
+            conversation: {
+              supportedPartRecommendations: [
+                { item: "IGN-1", itemType: "part", matchingRequestCount: 3, score: 0.75 },
+              ],
+              diagnosticQuestions: ["Does the igniter glow?"],
+              unsupportedPartsPolicy: "Do not present unsupported parts as recommendations.",
+            },
+          },
         }}
         detailLoading={false}
         actionState={null}
@@ -136,6 +146,11 @@ describe("CasesView", () => {
     );
 
     expect(screen.getByText("Dispatch handoff brief")).toBeInTheDocument();
+    expect(screen.getByText("PartsCannon evidence")).toBeInTheDocument();
+    expect(screen.getByText("IGN-1")).toBeInTheDocument();
+    expect(screen.getByText("Ask before ordering")).toBeInTheDocument();
+    expect(screen.getByText("Does the igniter glow?")).toBeInTheDocument();
+    expect(screen.getByText("Do not present unsupported parts as recommendations.")).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByRole("button", { name: "Copy brief" }));
     });

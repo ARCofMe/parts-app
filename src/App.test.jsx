@@ -9,6 +9,7 @@ const { partsApiMock } = vi.hoisted(() => ({
     getRequests: vi.fn(),
     getCase: vi.fn(),
     getCaseTimeline: vi.fn(),
+    getRecommendationConversation: vi.fn(),
     sync: vi.fn(),
   },
 }));
@@ -45,11 +46,13 @@ describe("Parts App", () => {
     partsApiMock.getRequests.mockReset();
     partsApiMock.getCase.mockReset();
     partsApiMock.getCaseTimeline.mockReset();
+    partsApiMock.getRecommendationConversation.mockReset();
     partsApiMock.sync.mockReset();
     partsApiMock.getCases.mockResolvedValue({ items: [] });
     partsApiMock.getRequests.mockResolvedValue({ items: [] });
     partsApiMock.getCase.mockResolvedValue({ case: { reference: "SR-100" }, trackedRequests: [] });
     partsApiMock.getCaseTimeline.mockResolvedValue({ entries: [] });
+    partsApiMock.getRecommendationConversation.mockResolvedValue({ available: false, message: "No evidence." });
     partsApiMock.sync.mockResolvedValue({ message: "Sync complete." });
   });
 

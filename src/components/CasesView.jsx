@@ -132,6 +132,13 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
   }
 
   const item = detail.case;
+  const recommendationConversation = detail.recommendationConversation?.conversation;
+  const supportedRecommendations = Array.isArray(recommendationConversation?.supportedPartRecommendations)
+    ? recommendationConversation.supportedPartRecommendations
+    : [];
+  const diagnosticQuestions = Array.isArray(recommendationConversation?.diagnosticQuestions)
+    ? recommendationConversation.diagnosticQuestions
+    : [];
 
   return (
     <aside className="detail-panel">
@@ -164,6 +171,33 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
         {item.blocker && <p className="error-text">Blocker: {item.blocker}</p>}
         {item.latestIssueText && <p className="muted">Issue: {item.latestIssueText}</p>}
         {item.latestStatusText && <p className="muted">Latest status: {item.latestStatusText}</p>}
+      </div>
+
+      <div className="detail-block">
+        <strong>PartsCannon evidence</strong>
+        {!!detailErrors?.recommendationConversation && <p className="error-text">{detailErrors.recommendationConversation}</p>}
+        {detail.recommendationConversation?.available ? (
+          <div className="history-list">
+            {supportedRecommendations.map((part) => (
+              <div key={`${part.itemType}-${part.item}`} className="history-entry">
+                <p>{part.item}</p>
+                <span>
+                  {[part.itemType, `${part.matchingRequestCount || 0} matching SRs`, formatScore(part.score)].filter(Boolean).join(" • ")}
+                </span>
+              </div>
+            ))}
+            {!supportedRecommendations.length && <p className="muted">No supported parts found in historical evidence.</p>}
+            {!!diagnosticQuestions.length && (
+              <div className="history-entry">
+                <p>Ask before ordering</p>
+                <small>{diagnosticQuestions.slice(0, 3).join(" ")}</small>
+              </div>
+            )}
+            <p className="muted">{recommendationConversation?.unsupportedPartsPolicy}</p>
+          </div>
+        ) : (
+          <p className="muted">{detail.recommendationConversation?.message || "No PartsCannon evidence loaded for this case."}</p>
+        )}
       </div>
 
       <div className="detail-block">
@@ -327,6 +361,12 @@ function describeStatusMeta(meta) {
   if (meta.isScheduling) return "This SR is in a scheduling state, so confirm the parts loop is really still active.";
   if (meta.isReview) return "This SR is in a review or triage state, so office follow-up may be the real blocker.";
   return "This SR status does not currently map to a stronger parts-specific rule.";
+}
+
+function formatScore(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return "";
+  return `${Math.round(numeric * 100)}% match`;
 }
 
 function buildDispatchHandoffBrief(item, requests) {

@@ -36,6 +36,19 @@ describe("partsApi client", () => {
     expect(getPartsUserId()).toBe("parts-42");
   });
 
+  it("loads PartsCannon recommendation conversations for service requests", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      text: () => Promise.resolve(JSON.stringify({ available: true })),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await partsApi.getRecommendationConversation(100);
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(url).toContain("/parts/sr/100/recommendation_conversation");
+  });
+
   it("clears the per-browser parts user id when blanked", () => {
     setPartsUserId("parts-42");
     setPartsUserId("");

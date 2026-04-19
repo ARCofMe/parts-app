@@ -65,6 +65,9 @@ export const partsApi = {
   getCaseTimeline(reference) {
     return request(`/parts/cases/${encodeURIComponent(reference)}/timeline`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
+  getRecommendationConversation(srId) {
+    return request(`/parts/sr/${srId}/recommendation_conversation`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
+  },
   getRequests(filters = {}) {
     const params = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {

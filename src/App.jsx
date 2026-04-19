@@ -202,8 +202,21 @@ export default function App() {
       if (timelineResult.status === "rejected") {
         nextSectionErrors.timeline = formatError(timelineResult.reason);
       }
+      let recommendationPayload = null;
+      if (casePayload?.case?.srId) {
+        const recommendationResult = await partsApi.getRecommendationConversation(casePayload.case.srId).then(
+          (payload) => ({ status: "fulfilled", value: payload }),
+          (error) => ({ status: "rejected", reason: error })
+        );
+        if (caseDetailRequestIdRef.current !== requestId) return;
+        if (recommendationResult.status === "fulfilled") {
+          recommendationPayload = recommendationResult.value;
+        } else {
+          nextSectionErrors.recommendationConversation = formatError(recommendationResult.reason);
+        }
+      }
       if (casePayload) {
-        setSelectedCaseDetail({ ...casePayload, timeline: timelinePayload });
+        setSelectedCaseDetail({ ...casePayload, timeline: timelinePayload, recommendationConversation: recommendationPayload });
         setCaseSectionErrors(nextSectionErrors);
       } else {
         setSelectedCaseDetail(null);
