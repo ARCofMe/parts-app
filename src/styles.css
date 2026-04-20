@@ -196,6 +196,69 @@ button, input { font: inherit; }
   grid-column: span 12;
 }
 
+.dashboard-disclosure {
+  grid-column: 1 / -1;
+}
+
+.dashboard-disclosure,
+.control-disclosure {
+  width: 100%;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--card-bg) 82%, transparent);
+  padding: 14px;
+}
+
+.dashboard-disclosure summary,
+.control-disclosure summary,
+.disclosure-card summary {
+  cursor: pointer;
+  color: var(--text-main);
+  font-weight: 800;
+}
+
+.dashboard-disclosure summary,
+.control-disclosure summary,
+.disclosure-card summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dashboard-disclosure summary::after,
+.control-disclosure summary::after,
+.disclosure-card summary::after {
+  content: "Open";
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-disclosure[open] summary,
+.control-disclosure[open] summary,
+.disclosure-card[open] summary {
+  margin-bottom: 14px;
+}
+
+.dashboard-disclosure[open] summary::after,
+.control-disclosure[open] summary::after,
+.disclosure-card[open] summary::after {
+  content: "Hide";
+}
+
+.dashboard-disclosure summary::-webkit-details-marker,
+.control-disclosure summary::-webkit-details-marker,
+.disclosure-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.control-disclosure .filter-grid {
+  margin-top: 4px;
+}
+
 .metric-card p {
   margin: 0 0 8px;
   color: var(--text-muted);

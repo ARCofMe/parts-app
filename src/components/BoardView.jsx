@@ -59,32 +59,38 @@ export default function BoardView({
         </article>
       </div>
 
-      <div className="board-grid">
-        <Metric label="Total requests" value={summary.totalRequests} />
-        <Metric label="Open requests" value={summary.openRequests} />
-        <Metric label="Assigned requests" value={summary.assignedRequests} />
-        <Metric label="Unassigned requests" value={summary.unassignedRequests} />
-        <Metric label="Synced requests" value={summary.syncedRequests} />
-        <Metric label="Resolved requests" value={summary.resolvedCount} />
-      </div>
+      <details className="dashboard-disclosure">
+        <summary>Queue health and sync metrics</summary>
+        <div className="board-grid">
+          <Metric label="Total requests" value={summary.totalRequests} />
+          <Metric label="Open requests" value={summary.openRequests} />
+          <Metric label="Assigned requests" value={summary.assignedRequests} />
+          <Metric label="Unassigned requests" value={summary.unassignedRequests} />
+          <Metric label="Synced requests" value={summary.syncedRequests} />
+          <Metric label="Resolved requests" value={summary.resolvedCount} />
+        </div>
+      </details>
 
-      <div className="board-grid secondary">
-        <article className="metric-card wide">
-          <p>Case stages</p>
-          <div className="chip-list">
-            {Object.entries(metrics.stageCounts || {}).map(([key, value]) => (
-              <span className="queue-chip" key={key}>{key.replaceAll("_", " ")}: {value}</span>
-            ))}
-          </div>
-        </article>
-        <article className="metric-card wide">
-          <p>Case ownership</p>
-          <div className="chip-list">
-            <span className="queue-chip">Assigned: {metrics.assignedCases ?? 0}</span>
-            <span className="queue-chip">Unassigned: {metrics.unassignedCases ?? 0}</span>
-          </div>
-        </article>
-      </div>
+      <details className="dashboard-disclosure">
+        <summary>Case stage and ownership detail</summary>
+        <div className="board-grid secondary">
+          <article className="metric-card wide">
+            <p>Case stages</p>
+            <div className="chip-list">
+              {Object.entries(metrics.stageCounts || {}).map(([key, value]) => (
+                <span className="queue-chip" key={key}>{key.replaceAll("_", " ")}: {value}</span>
+              ))}
+            </div>
+          </article>
+          <article className="metric-card wide">
+            <p>Case ownership</p>
+            <div className="chip-list">
+              <span className="queue-chip">Assigned: {metrics.assignedCases ?? 0}</span>
+              <span className="queue-chip">Unassigned: {metrics.unassignedCases ?? 0}</span>
+            </div>
+          </article>
+        </div>
+      </details>
 
       <div className="board-columns">
         <article className="detail-panel">

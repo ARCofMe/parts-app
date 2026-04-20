@@ -50,22 +50,25 @@ export default function CasesView({
     <section className="panel attention-layout">
       <div className="attention-column">
         <div className="attention-toolbar">
-          <div className="filter-grid">
-            {Object.keys(DEFAULT_FILTERS).map((key) => (
-              <label className="field" key={key}>
-                <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                <input
-                  value={filters[key]}
-                  onChange={(event) => setFilters((current) => ({ ...current, [key]: event.target.value }))}
-                  placeholder={key === "reference" ? "SR-1234" : ""}
-                />
-              </label>
-            ))}
-          </div>
-          <div className="action-row">
-            <button type="button" onClick={() => setFilters(DEFAULT_FILTERS)}>Clear filters</button>
-            <button type="button" onClick={onRefresh}>Refresh</button>
-          </div>
+          <details className="control-disclosure">
+            <summary>Filters and queue controls</summary>
+            <div className="filter-grid">
+              {Object.keys(DEFAULT_FILTERS).map((key) => (
+                <label className="field" key={key}>
+                  <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                  <input
+                    value={filters[key]}
+                    onChange={(event) => setFilters((current) => ({ ...current, [key]: event.target.value }))}
+                    placeholder={key === "reference" ? "SR-1234" : ""}
+                  />
+                </label>
+              ))}
+            </div>
+            <div className="action-row">
+              <button type="button" onClick={() => setFilters(DEFAULT_FILTERS)}>Clear filters</button>
+              <button type="button" onClick={onRefresh}>Refresh</button>
+            </div>
+          </details>
         </div>
 
         {loading && <p>Loading parts cases…</p>}
@@ -200,7 +203,8 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
         )}
       </div>
 
-      <div className="detail-block">
+      <details className="detail-block disclosure-card">
+        <summary>Dispatch and scheduling handoffs</summary>
         <div className="section-head compact">
           <strong>Dispatch handoff brief</strong>
           <button
@@ -219,9 +223,6 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
         </div>
         <p className="muted">{buildDispatchHandoffBrief(item, detail.trackedRequests || [])}</p>
         {copyState && <p className="muted">{copyState}</p>}
-      </div>
-
-      <div className="detail-block">
         <div className="section-head compact">
           <strong>Scheduling handoff</strong>
           <button
@@ -239,9 +240,10 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
           </button>
         </div>
         <p className="muted">{buildSchedulingHandoffBrief(item, detail.trackedRequests || [])}</p>
-      </div>
+      </details>
 
-      <div className="detail-block">
+      <details className="detail-block disclosure-card">
+        <summary>Parts status updates</summary>
         <strong>Ordering update</strong>
         <div className="inline-form-row">
           <label className="field slim">
@@ -259,7 +261,6 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
             Mark ordered
           </button>
         </div>
-      </div>
 
       <div className="inline-form-row">
         <label className="field slim">
@@ -307,6 +308,7 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
           Ready to schedule
         </button>
       </div>
+      </details>
 
       {actionState && <p className={actionState.error ? "error-text" : "muted"}>{actionState.message}</p>}
 
@@ -326,8 +328,8 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
         </div>
       </div>
 
-      <div className="detail-block">
-        <strong>Timeline</strong>
+      <details className="detail-block disclosure-card">
+        <summary>Timeline</summary>
         {!!detailErrors?.timeline && <p className="error-text">{detailErrors.timeline}</p>}
         <div className="history-list tall">
           {(detail.timeline?.entries || []).map((entry, index) => (
@@ -338,7 +340,7 @@ function CaseDetail({ detail, loading, detailErrors, actionState, onCaseAction, 
           ))}
           {!((detail.timeline?.entries || []).length) && <p className="muted">No timeline entries yet.</p>}
         </div>
-      </div>
+      </details>
     </aside>
   );
 }

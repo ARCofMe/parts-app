@@ -49,22 +49,25 @@ export default function RequestsView({
     <section className="panel attention-layout">
       <div className="attention-column">
         <div className="attention-toolbar">
-          <div className="filter-grid">
-            {Object.keys(DEFAULT_FILTERS).map((key) => (
-              <label className="field" key={key}>
-                <span>{labelFor(key)}</span>
-                <input
-                  value={filters[key]}
-                  onChange={(event) => setFilters((current) => ({ ...current, [key]: event.target.value }))}
-                  placeholder={key === "reference" ? "SR-1234" : ""}
-                />
-              </label>
-            ))}
-          </div>
-          <div className="action-row">
-            <button type="button" onClick={() => setFilters(DEFAULT_FILTERS)}>Clear filters</button>
-            <button type="button" onClick={onRefresh}>Refresh</button>
-          </div>
+          <details className="control-disclosure">
+            <summary>Filters and request controls</summary>
+            <div className="filter-grid">
+              {Object.keys(DEFAULT_FILTERS).map((key) => (
+                <label className="field" key={key}>
+                  <span>{labelFor(key)}</span>
+                  <input
+                    value={filters[key]}
+                    onChange={(event) => setFilters((current) => ({ ...current, [key]: event.target.value }))}
+                    placeholder={key === "reference" ? "SR-1234" : ""}
+                  />
+                </label>
+              ))}
+            </div>
+            <div className="action-row">
+              <button type="button" onClick={() => setFilters(DEFAULT_FILTERS)}>Clear filters</button>
+              <button type="button" onClick={onRefresh}>Refresh</button>
+            </div>
+          </details>
         </div>
 
         {loading && <p>Loading tracked requests…</p>}
@@ -124,8 +127,8 @@ export default function RequestsView({
               <p className="muted">Requested by {selectedRequestDetail.request.requestedByLabel || "unknown"}.</p>
             </div>
 
-            <div className="detail-block">
-              <strong>Request actions</strong>
+            <details className="detail-block disclosure-card">
+              <summary>Request actions</summary>
               <div className="inline-form-row">
                 <label className="field slim">
                   <span>Assign to Discord user id</span>
@@ -145,7 +148,7 @@ export default function RequestsView({
                 <button type="button" onClick={() => onRequestAction(selectedRequestDetail.request.requestId, "status", { status: "received" })}>Received</button>
                 <button type="button" onClick={() => onRequestAction(selectedRequestDetail.request.requestId, "status", { status: "resolved" })}>Resolved</button>
               </div>
-            </div>
+            </details>
 
             <div className="detail-block">
               <div className="section-head compact">
