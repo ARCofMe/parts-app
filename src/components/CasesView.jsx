@@ -158,8 +158,10 @@ function CaseDetail({
     ? recommendationConversation.diagnosticQuestions
     : [];
   const evidenceSummary = recommendationConversation?.evidenceSummary || {};
+  const feedbackCaptureEnabled = recommendationConversation?.feedbackCaptureEnabled !== false;
   const modelFamilyTrends = evidenceSummary?.modelFamilyTrends || null;
   const feedbackSummary = evidenceSummary?.feedbackSummary || { counts: {}, latest: null };
+  const feedbackHealth = evidenceSummary?.feedbackHealth || null;
   const feedbackCounts = feedbackSummary?.counts || {};
   const topRecommendation = supportedRecommendations[0] || null;
 
@@ -235,6 +237,7 @@ function CaseDetail({
             <p className="muted">{recommendationConversation?.unsupportedPartsPolicy}</p>
             <div className="history-entry">
               <p>Evidence feedback</p>
+              {feedbackHealth?.label && <small>{feedbackHealth.label}</small>}
               <small>
                 Helpful {feedbackCounts.helpful || 0} • Needs review {feedbackCounts.needs_review || 0} • Not useful{" "}
                 {feedbackCounts.not_helpful || 0}
@@ -253,7 +256,7 @@ function CaseDetail({
               <div className="action-row">
                 <button
                   type="button"
-                  disabled={evidenceFeedbackState?.loading}
+                  disabled={evidenceFeedbackState?.loading || !feedbackCaptureEnabled}
                   onClick={() => onEvidenceFeedback?.("helpful", topRecommendation?.item || "", evidenceFeedbackNote)}
                 >
                   Evidence helped
@@ -261,7 +264,7 @@ function CaseDetail({
                 <button
                   type="button"
                   className="secondary-button"
-                  disabled={evidenceFeedbackState?.loading}
+                  disabled={evidenceFeedbackState?.loading || !feedbackCaptureEnabled}
                   onClick={() => onEvidenceFeedback?.("needs_review", topRecommendation?.item || "", evidenceFeedbackNote)}
                 >
                   Needs review
@@ -269,7 +272,7 @@ function CaseDetail({
                 <button
                   type="button"
                   className="secondary-button"
-                  disabled={evidenceFeedbackState?.loading}
+                  disabled={evidenceFeedbackState?.loading || !feedbackCaptureEnabled}
                   onClick={() => onEvidenceFeedback?.("not_helpful", topRecommendation?.item || "", evidenceFeedbackNote)}
                 >
                   Not useful
@@ -278,6 +281,7 @@ function CaseDetail({
               {evidenceFeedbackState?.message && (
                 <small className={evidenceFeedbackState.error ? "error-text" : "muted"}>{evidenceFeedbackState.message}</small>
               )}
+              {!feedbackCaptureEnabled && <small>Feedback capture is not enabled for this evidence source.</small>}
             </div>
           </div>
         ) : (

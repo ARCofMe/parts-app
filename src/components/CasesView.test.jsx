@@ -144,6 +144,7 @@ describe("CasesView", () => {
                   topComplaintTags: [{ tag: "no_heat", count: 5 }],
                 },
                 feedbackSummary: { counts: { helpful: 1 }, latest: { outcome: "helpful", notes: "Matched final repair." } },
+                feedbackHealth: { status: "supportive", label: "Prior feedback supports this evidence" },
               },
             },
           },
@@ -160,6 +161,7 @@ describe("CasesView", () => {
     expect(screen.getByText("PartsCannon evidence")).toBeInTheDocument();
     expect(screen.getAllByText("IGN-1").length).toBeGreaterThan(0);
     expect(screen.getByText("DG45 trend")).toBeInTheDocument();
+    expect(screen.getByText("Prior feedback supports this evidence")).toBeInTheDocument();
     expect(screen.getByText(/Helpful 1/)).toBeInTheDocument();
     expect(screen.getByText("Latest note: Matched final repair.")).toBeInTheDocument();
     expect(screen.getByText("Ask before ordering")).toBeInTheDocument();
