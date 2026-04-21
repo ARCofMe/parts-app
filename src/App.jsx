@@ -377,7 +377,7 @@ export default function App() {
     }
   }
 
-  async function handleCaseEvidenceFeedback(outcome, recommendedItem = "") {
+  async function handleCaseEvidenceFeedback(outcome, recommendedItem = "", notes = "") {
     const srId = selectedCaseDetail?.case?.srId;
     if (!srId) {
       setCaseEvidenceFeedbackState({ error: true, message: "This case is not linked to an SR yet." });
@@ -388,7 +388,7 @@ export default function App() {
       const payload = await partsApi.submitComplaintEvidenceFeedback(srId, {
         outcome,
         recommendedItem,
-        notes: "",
+        notes,
       });
       setSelectedCaseDetail((current) => {
         if (!current?.recommendationConversation?.conversation) return current;

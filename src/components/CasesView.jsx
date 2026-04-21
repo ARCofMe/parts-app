@@ -135,6 +135,7 @@ function CaseDetail({
   const [receivedFrom, setReceivedFrom] = useState("");
   const [readyNote, setReadyNote] = useState("");
   const [copyState, setCopyState] = useState("");
+  const [evidenceFeedbackNote, setEvidenceFeedbackNote] = useState("");
 
   if (loading) {
     return <aside className="detail-panel"><p className="muted">Loading parts case…</p></aside>;
@@ -239,11 +240,21 @@ function CaseDetail({
                 {feedbackCounts.not_helpful || 0}
                 {feedbackSummary.latest?.outcome ? ` • Latest ${formatFeedbackOutcome(feedbackSummary.latest.outcome)}` : ""}
               </small>
+              {feedbackSummary.latest?.notes && <small>Latest note: {feedbackSummary.latest.notes}</small>}
+              <label className="field slim">
+                <span>Feedback note</span>
+                <input
+                  value={evidenceFeedbackNote}
+                  onChange={(event) => setEvidenceFeedbackNote(event.target.value)}
+                  maxLength={1000}
+                  placeholder="Example: verified part, needs better complaint context"
+                />
+              </label>
               <div className="action-row">
                 <button
                   type="button"
                   disabled={evidenceFeedbackState?.loading}
-                  onClick={() => onEvidenceFeedback?.("helpful", topRecommendation?.item || "")}
+                  onClick={() => onEvidenceFeedback?.("helpful", topRecommendation?.item || "", evidenceFeedbackNote)}
                 >
                   Evidence helped
                 </button>
@@ -251,7 +262,7 @@ function CaseDetail({
                   type="button"
                   className="secondary-button"
                   disabled={evidenceFeedbackState?.loading}
-                  onClick={() => onEvidenceFeedback?.("needs_review", topRecommendation?.item || "")}
+                  onClick={() => onEvidenceFeedback?.("needs_review", topRecommendation?.item || "", evidenceFeedbackNote)}
                 >
                   Needs review
                 </button>
@@ -259,7 +270,7 @@ function CaseDetail({
                   type="button"
                   className="secondary-button"
                   disabled={evidenceFeedbackState?.loading}
-                  onClick={() => onEvidenceFeedback?.("not_helpful", topRecommendation?.item || "")}
+                  onClick={() => onEvidenceFeedback?.("not_helpful", topRecommendation?.item || "", evidenceFeedbackNote)}
                 >
                   Not useful
                 </button>

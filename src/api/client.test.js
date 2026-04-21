@@ -117,6 +117,27 @@ describe("partsApi client", () => {
     await expect(partsApi.getBoard()).rejects.toThrow('Sent operator ID "wrong-parts".');
   });
 
+  it("sanitizes internal asyncio task errors from Ops Hub responses", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: () =>
+          Promise.resolve(
+            JSON.stringify({
+              success: false,
+              message:
+                "Task <Task pending name='Task-211'> got Future <Task pending name='Task-212'> attached to a different loop",
+            }),
+          ),
+      }),
+    );
+
+    await expect(partsApi.getRecommendationConversation(100)).rejects.toThrow("internal refresh error");
+    await expect(partsApi.getRecommendationConversation(100)).rejects.not.toThrow("Task <Task");
+  });
+
   it("uses the extended read timeout for parts board requests", async () => {
     vi.useFakeTimers();
     const fetchMock = vi.fn().mockImplementation(

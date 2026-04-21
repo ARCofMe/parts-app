@@ -143,7 +143,7 @@ describe("CasesView", () => {
                   topParts: [{ item: "IGN-1", count: 4 }],
                   topComplaintTags: [{ tag: "no_heat", count: 5 }],
                 },
-                feedbackSummary: { counts: { helpful: 1 }, latest: { outcome: "helpful" } },
+                feedbackSummary: { counts: { helpful: 1 }, latest: { outcome: "helpful", notes: "Matched final repair." } },
               },
             },
           },
@@ -161,6 +161,7 @@ describe("CasesView", () => {
     expect(screen.getAllByText("IGN-1").length).toBeGreaterThan(0);
     expect(screen.getByText("DG45 trend")).toBeInTheDocument();
     expect(screen.getByText(/Helpful 1/)).toBeInTheDocument();
+    expect(screen.getByText("Latest note: Matched final repair.")).toBeInTheDocument();
     expect(screen.getByText("Ask before ordering")).toBeInTheDocument();
     expect(screen.getByText("Does the igniter glow?")).toBeInTheDocument();
     expect(screen.getByText("Do not present unsupported parts as recommendations.")).toBeInTheDocument();
@@ -217,9 +218,10 @@ describe("CasesView", () => {
       />
     );
 
+    fireEvent.change(screen.getByLabelText("Feedback note"), { target: { value: "Verified by parts." } });
     fireEvent.click(screen.getByRole("button", { name: "Evidence helped" }));
 
-    expect(onEvidenceFeedback).toHaveBeenCalledWith("helpful", "PUMP-1");
+    expect(onEvidenceFeedback).toHaveBeenCalledWith("helpful", "PUMP-1", "Verified by parts.");
     expect(screen.getByText("Recorded evidence feedback as helpful.")).toBeInTheDocument();
   });
 

@@ -266,13 +266,14 @@ describe("Parts App", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "Cases" }));
     fireEvent.click(await screen.findByRole("button", { name: /SR-100/i }));
+    fireEvent.change(await screen.findByLabelText("Feedback note"), { target: { value: "Verified by parts desk." } });
     fireEvent.click(await screen.findByRole("button", { name: "Evidence helped" }));
 
     await waitFor(() => {
       expect(partsApiMock.submitComplaintEvidenceFeedback).toHaveBeenCalledWith(100, {
         outcome: "helpful",
         recommendedItem: "FAN-1",
-        notes: "",
+        notes: "Verified by parts desk.",
       });
     });
     expect(await screen.findByText("Recorded evidence feedback as helpful.")).toBeInTheDocument();
