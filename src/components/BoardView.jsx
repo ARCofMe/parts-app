@@ -19,6 +19,8 @@ export default function BoardView({
   const briefItems = fulfillmentBrief(board);
   const openCases = asArray(board.openCases);
   const openTrackedRequests = asArray(board.openTrackedRequests);
+  const readyCases = openCases.filter((item) => String(item.stage || item.stageLabel || "").toLowerCase().includes("ready") || String(item.nextAction || "").toLowerCase().includes("schedule"));
+  const unownedCases = openCases.filter((item) => !item.assignedPartsLabel && !item.assignedPartsUserId);
 
   return (
     <section className="panel board-layout">
@@ -43,6 +45,12 @@ export default function BoardView({
         <span>Order parts</span>
         <span>Confirm ETA</span>
         <span>Release to schedule</span>
+      </div>
+
+      <div className="chip-list">
+        <span className="queue-chip">Ready handoffs: {readyCases.length}</span>
+        <span className="queue-chip">Unowned cases: {unownedCases.length}</span>
+        <span className="queue-chip">Open tracked requests: {openTrackedRequests.length}</span>
       </div>
 
       <div className="board-grid secondary">
@@ -84,9 +92,13 @@ export default function BoardView({
           <article className="metric-card wide">
             <p>Case stages</p>
             <div className="chip-list">
-              {Object.entries(metrics.stageCounts || {}).map(([key, value]) => (
-                <span className="queue-chip" key={key}>{key.replaceAll("_", " ")}: {value}</span>
-              ))}
+              {Object.entries(metrics.stageCounts || {}).length ? (
+                Object.entries(metrics.stageCounts || {}).map(([key, value]) => (
+                  <span className="queue-chip" key={key}>{key.replaceAll("_", " ")}: {value}</span>
+                ))
+              ) : (
+                <span className="muted">No case stage counts loaded yet.</span>
+              )}
             </div>
           </article>
           <article className="metric-card wide">

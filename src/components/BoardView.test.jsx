@@ -55,6 +55,9 @@ describe("BoardView", () => {
     expect(screen.getByText("Total requests")).toBeInTheDocument();
     expect(screen.getByText("Parts fulfillment brief")).toBeInTheDocument();
     expect(screen.getByText("Clear the blockers first")).toBeInTheDocument();
+    expect(screen.getByText("Ready handoffs: 0")).toBeInTheDocument();
+    expect(screen.getByText("Unowned cases: 0")).toBeInTheDocument();
+    expect(screen.getByText("Open tracked requests: 1")).toBeInTheDocument();
     expect(screen.getByText("Unassigned")).toBeInTheDocument();
     expect(screen.getByText("First case")).toBeInTheDocument();
     expect(screen.getByText("Hot stage")).toBeInTheDocument();
@@ -94,6 +97,7 @@ describe("BoardView", () => {
     );
 
     expect(screen.getByText("Queue state")).toBeInTheDocument();
+    expect(screen.getByText("No case stage counts loaded yet.")).toBeInTheDocument();
     expect(screen.getByText("No open parts cases right now.")).toBeInTheDocument();
     expect(screen.getByText("No tracked requests right now.")).toBeInTheDocument();
   });

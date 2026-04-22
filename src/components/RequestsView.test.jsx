@@ -59,8 +59,53 @@ describe("RequestsView", () => {
 
     expect(screen.getByText("#11 • SR-101")).toBeInTheDocument();
     expect(screen.queryByText("#10 • SR-100")).not.toBeInTheDocument();
+    expect(screen.getByText("Pick request")).toBeInTheDocument();
+    expect(screen.getByText("requested: 1")).toBeInTheDocument();
+    expect(screen.getByText("ordered: 1")).toBeInTheDocument();
     expect(screen.getByText("Linked case")).toBeInTheDocument();
     expect(screen.getByText("SR-101 • Ordered")).toBeInTheDocument();
+  });
+
+  it("requires a numeric assignee and handles missing linked case details", () => {
+    const onRequestAction = vi.fn();
+    const onOpenCase = vi.fn();
+
+    render(
+      <RequestsView
+        items={[]}
+        loading={false}
+        error=""
+        onRefresh={vi.fn()}
+        onSelectRequest={vi.fn()}
+        selectedRequest={{ requestId: 20 }}
+        selectedRequestDetail={{
+          request: {
+            requestId: 20,
+            reference: "SR-200",
+            status: "requested",
+            description: "Door switch",
+            assignedPartsLabel: "",
+            caseStageLabel: "Requested",
+            requestedByLabel: "Dispatch 1",
+          },
+          case: null,
+        }}
+        detailLoading={false}
+        onRequestAction={onRequestAction}
+        requestActionState={null}
+        onOpenCase={onOpenCase}
+      />
+    );
+
+    expect(screen.getByText("No linked case detail is available for this tracked request yet.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open case" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Assign" })).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Assign to Discord user id"), { target: { value: "77" } });
+    fireEvent.click(screen.getByRole("button", { name: "Assign" }));
+
+    expect(onRequestAction).toHaveBeenCalledWith(20, "claim", { assignedPartsUserId: 77 });
+    expect(onOpenCase).not.toHaveBeenCalled();
   });
 
   it("retries request loading via refresh after an error", () => {

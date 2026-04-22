@@ -44,10 +44,34 @@ export default function RequestsView({
       })
     );
   }, [filters, items]);
+  const statusCounts = useMemo(() => {
+    return (items || []).reduce((counts, item) => {
+      const status = item?.status || "unknown";
+      counts[status] = (counts[status] || 0) + 1;
+      return counts;
+    }, {});
+  }, [items]);
+  const assignedPartsUserIdValue = assignedPartsUserId.trim();
+  const canAssignEnteredOwner = /^\d+$/.test(assignedPartsUserIdValue);
 
   return (
     <section className="panel attention-layout">
       <div className="attention-column">
+        <div className="workflow-strip compact">
+          <span>Pick request</span>
+          <span>Claim owner</span>
+          <span>Update status</span>
+          <span>Open case</span>
+        </div>
+        <div className="chip-list">
+          {Object.entries(statusCounts).length ? (
+            Object.entries(statusCounts).map(([status, count]) => (
+              <span key={status} className="queue-chip">{status}: {count}</span>
+            ))
+          ) : (
+            <span className="muted">No tracked request status counts yet.</span>
+          )}
+        </div>
         <div className="attention-toolbar">
           <details className="control-disclosure">
             <summary>Filters and request controls</summary>
@@ -132,11 +156,21 @@ export default function RequestsView({
               <div className="inline-form-row">
                 <label className="field slim">
                   <span>Assign to Discord user id</span>
-                  <input value={assignedPartsUserId} onChange={(event) => setAssignedPartsUserId(event.target.value)} placeholder="1234567890" />
+                  <input
+                    value={assignedPartsUserId}
+                    onChange={(event) => setAssignedPartsUserId(event.target.value)}
+                    inputMode="numeric"
+                    placeholder="1234567890"
+                  />
                 </label>
                 <button
                   type="button"
-                  onClick={() => onRequestAction(selectedRequestDetail.request.requestId, "claim", assignedPartsUserId ? { assignedPartsUserId: Number(assignedPartsUserId) } : {})}
+                  disabled={!canAssignEnteredOwner}
+                  onClick={() =>
+                    onRequestAction(selectedRequestDetail.request.requestId, "claim", {
+                      assignedPartsUserId: Number.parseInt(assignedPartsUserIdValue, 10),
+                    })
+                  }
                 >
                   Assign
                 </button>
@@ -153,14 +187,24 @@ export default function RequestsView({
             <div className="detail-block">
               <div className="section-head compact">
                 <strong>Linked case</strong>
-                <button type="button" onClick={() => onOpenCase?.(selectedRequestDetail.case.reference)}>Open case</button>
+                <button
+                  type="button"
+                  disabled={!selectedRequestDetail.case?.reference}
+                  onClick={() => onOpenCase?.(selectedRequestDetail.case.reference)}
+                >
+                  Open case
+                </button>
               </div>
-              <div className="history-entry">
-                <p>{selectedRequestDetail.case.reference} • {selectedRequestDetail.case.stageLabel || selectedRequestDetail.case.stage}</p>
-                <span>
-                  {selectedRequestDetail.case.nextAction || selectedRequestDetail.case.latestStatusText || "No next action yet."}
-                </span>
-              </div>
+              {selectedRequestDetail.case?.reference ? (
+                <div className="history-entry">
+                  <p>{selectedRequestDetail.case.reference} • {selectedRequestDetail.case.stageLabel || selectedRequestDetail.case.stage}</p>
+                  <span>
+                    {selectedRequestDetail.case.nextAction || selectedRequestDetail.case.latestStatusText || "No next action yet."}
+                  </span>
+                </div>
+              ) : (
+                <p className="muted">No linked case detail is available for this tracked request yet.</p>
+              )}
             </div>
           </>
         )}
