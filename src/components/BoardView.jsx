@@ -38,6 +38,13 @@ export default function BoardView({
       {error && <p className="error-text">{error}</p>}
       {syncState && <p className={syncState.error ? "error-text" : "muted"}>{syncState.message}</p>}
 
+      <div className="workflow-strip">
+        <span>Claim owner</span>
+        <span>Order parts</span>
+        <span>Confirm ETA</span>
+        <span>Release to schedule</span>
+      </div>
+
       <div className="board-grid secondary">
         <article className="metric-card wide command-brief">
           <div className="section-head compact">

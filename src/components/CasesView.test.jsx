@@ -158,7 +158,8 @@ describe("CasesView", () => {
     );
 
     expect(screen.getByText("Dispatch handoff brief")).toBeInTheDocument();
-    expect(screen.getByText("PartsCannon evidence")).toBeInTheDocument();
+    expect(screen.getByText("Evidence summary")).toBeInTheDocument();
+    expect(screen.getByText("PartsCannon evidence details")).toBeInTheDocument();
     expect(screen.getAllByText("IGN-1").length).toBeGreaterThan(0);
     expect(screen.getByText("DG45 trend")).toBeInTheDocument();
     expect(screen.getByText("Prior feedback supports this evidence")).toBeInTheDocument();

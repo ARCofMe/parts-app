@@ -52,6 +52,12 @@ export default function CasesView({
   return (
     <section className="panel attention-layout">
       <div className="attention-column">
+        <div className="workflow-strip compact">
+          <span>Pick case</span>
+          <span>Assign owner</span>
+          <span>Update status</span>
+          <span>Hand off</span>
+        </div>
         <div className="attention-toolbar">
           <details className="control-disclosure">
             <summary>Filters and queue controls</summary>
@@ -238,8 +244,20 @@ function CaseDetail({
         {item.latestStatusText && <p className="muted">Latest status: {item.latestStatusText}</p>}
       </div>
 
-      <div className="detail-block">
-        <strong>PartsCannon evidence</strong>
+      <div className="detail-block evidence-summary-card">
+        <strong>Evidence summary</strong>
+        <div className="detail-grid">
+          <Detail label="Confidence" value={evidenceSummary.confidence || "n/a"} />
+          <Detail label="Top part" value={topRecommendation?.item || "none"} />
+        </div>
+        {!!diagnosticQuestions.length && <p className="muted">Ask first: {diagnosticQuestions[0]}</p>}
+        {!detail.recommendationConversation?.available && (
+          <p className="muted">{detail.recommendationConversation?.message || "No PartsCannon evidence loaded for this case."}</p>
+        )}
+      </div>
+
+      <details className="detail-block disclosure-card">
+        <summary>PartsCannon evidence details</summary>
         {!!detailErrors?.recommendationConversation && <p className="error-text">{detailErrors.recommendationConversation}</p>}
         {detail.recommendationConversation?.available ? (
           <div className="history-list">
@@ -327,7 +345,7 @@ function CaseDetail({
         ) : (
           <p className="muted">{detail.recommendationConversation?.message || "No PartsCannon evidence loaded for this case."}</p>
         )}
-      </div>
+      </details>
 
       <details className="detail-block disclosure-card">
         <summary>Dispatch and scheduling handoffs</summary>
