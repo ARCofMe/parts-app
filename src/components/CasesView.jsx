@@ -23,6 +23,7 @@ export default function CasesView({
   actionState,
   evidenceFeedbackState,
   onCaseAction,
+  onCaseOwnerAction,
   onEvidenceFeedback,
   onOpenRequests,
   onOpenRequest,
@@ -108,6 +109,7 @@ export default function CasesView({
         actionState={actionState}
         evidenceFeedbackState={evidenceFeedbackState}
         onCaseAction={onCaseAction}
+        onCaseOwnerAction={onCaseOwnerAction}
         onEvidenceFeedback={onEvidenceFeedback}
         onOpenRequests={onOpenRequests}
         onOpenRequest={onOpenRequest}
@@ -123,6 +125,7 @@ function CaseDetail({
   actionState,
   evidenceFeedbackState,
   onCaseAction,
+  onCaseOwnerAction,
   onEvidenceFeedback,
   onOpenRequests,
   onOpenRequest,
@@ -134,6 +137,7 @@ function CaseDetail({
   const [orderedEta, setOrderedEta] = useState("");
   const [receivedFrom, setReceivedFrom] = useState("");
   const [readyNote, setReadyNote] = useState("");
+  const [assignedPartsUserId, setAssignedPartsUserId] = useState("");
   const [copyState, setCopyState] = useState("");
   const [evidenceFeedbackNote, setEvidenceFeedbackNote] = useState("");
 
@@ -164,6 +168,8 @@ function CaseDetail({
   const feedbackHealth = evidenceSummary?.feedbackHealth || null;
   const feedbackCounts = feedbackSummary?.counts || {};
   const topRecommendation = supportedRecommendations[0] || null;
+  const assignedPartsUserIdValue = assignedPartsUserId.trim();
+  const canAssignEnteredOwner = /^\d+$/.test(assignedPartsUserIdValue);
 
   return (
     <aside className="detail-panel">
@@ -187,6 +193,40 @@ function CaseDetail({
       <div className="chip-list detail-block">
         <span className="queue-chip">Updated: {item.updatedAt || "unknown"}</span>
         <span className="queue-chip">Open requests: {(item.openRequestIds || []).length}</span>
+      </div>
+
+      <div className="detail-block">
+        <strong>Owner assignment</strong>
+        <p className="muted">
+          Assigning a case updates every open tracked request for this SR. BlueFolder-only cases need a tracked request before
+          ownership can be stored.
+        </p>
+        <div className="inline-form-row">
+          <label className="field slim">
+            <span>Parts user ID</span>
+            <input
+              value={assignedPartsUserId}
+              onChange={(event) => setAssignedPartsUserId(event.target.value)}
+              inputMode="numeric"
+              placeholder="1234567890"
+            />
+          </label>
+          <button
+            type="button"
+            disabled={actionState?.message?.startsWith("Running") || !canAssignEnteredOwner}
+            onClick={() =>
+              onCaseOwnerAction?.(
+                item.reference,
+                "claim",
+                { assignedPartsUserId: Number.parseInt(assignedPartsUserIdValue, 10) }
+              )
+            }
+          >
+            Assign owner
+          </button>
+          <button type="button" onClick={() => onCaseOwnerAction?.(item.reference, "claim")}>Claim me</button>
+          <button type="button" onClick={() => onCaseOwnerAction?.(item.reference, "unclaim")}>Unassign</button>
+        </div>
       </div>
 
       <div className="detail-block">

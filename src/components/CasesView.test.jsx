@@ -227,6 +227,50 @@ describe("CasesView", () => {
     expect(screen.getByText("Recorded evidence feedback as helpful.")).toBeInTheDocument();
   });
 
+  it("assigns and unassigns the selected parts case owner", () => {
+    const onCaseOwnerAction = vi.fn();
+
+    render(
+      <CasesView
+        items={[]}
+        loading={false}
+        error=""
+        onRefresh={vi.fn()}
+        onSelectCase={vi.fn()}
+        selectedCase={{ reference: "SR-204" }}
+        selectedCaseDetail={{
+          case: {
+            caseId: "parts:SR-204",
+            srId: 204,
+            reference: "SR-204",
+            stage: "part_ordered",
+            stageLabel: "Ordered",
+            status: "open",
+            assignedPartsLabel: "",
+            openRequestIds: [7, 8],
+          },
+          trackedRequests: [],
+          timeline: { entries: [] },
+        }}
+        detailLoading={false}
+        actionState={null}
+        onCaseAction={vi.fn()}
+        onCaseOwnerAction={onCaseOwnerAction}
+        onOpenRequests={vi.fn()}
+        onOpenRequest={vi.fn()}
+      />
+    );
+
+    fireEvent.change(screen.getByLabelText("Parts user ID"), { target: { value: "88" } });
+    fireEvent.click(screen.getByRole("button", { name: "Assign owner" }));
+    fireEvent.click(screen.getByRole("button", { name: "Claim me" }));
+    fireEvent.click(screen.getByRole("button", { name: "Unassign" }));
+
+    expect(onCaseOwnerAction).toHaveBeenNthCalledWith(1, "SR-204", "claim", { assignedPartsUserId: 88 });
+    expect(onCaseOwnerAction).toHaveBeenNthCalledWith(2, "SR-204", "claim");
+    expect(onCaseOwnerAction).toHaveBeenNthCalledWith(3, "SR-204", "unclaim");
+  });
+
   it("builds a scheduling handoff focused on received request lines", async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, { clipboard: { writeText } });

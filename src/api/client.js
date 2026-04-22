@@ -65,6 +65,9 @@ export const partsApi = {
   getCaseTimeline(reference) {
     return request(`/parts/cases/${encodeURIComponent(reference)}/timeline`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
+  postPartsCaseAction(reference, action, body = {}) {
+    return request(`/parts/cases/${encodeURIComponent(reference)}/${action}`, { method: "POST", body });
+  },
   getRecommendationConversation(srId) {
     return request(`/parts/sr/${srId}/recommendation_conversation`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },

@@ -377,6 +377,27 @@ export default function App() {
     }
   }
 
+  async function handleCaseOwnerAction(reference, action, body = {}) {
+    if (!reference) {
+      setCaseActionState({ error: true, message: "This case does not have a valid reference." });
+      return;
+    }
+    setCaseActionState({ error: false, message: `Running ${action}…` });
+    try {
+      const payload = await partsApi.postPartsCaseAction(reference, action, body);
+      setCaseActionState({ error: false, message: payload.message || `${action} complete` });
+      await Promise.all([loadBoard(), loadCases(), loadRequests()]);
+      if (selectedCase?.reference) {
+        await loadCaseDetail(selectedCase.reference);
+      }
+      if (selectedRequest?.requestId) {
+        await loadRequestDetail(selectedRequest.requestId);
+      }
+    } catch (error) {
+      setCaseActionState({ error: true, message: formatError(error) });
+    }
+  }
+
   async function handleCaseEvidenceFeedback(outcome, recommendedItem = "", notes = "") {
     const srId = selectedCaseDetail?.case?.srId;
     if (!srId) {
@@ -491,6 +512,7 @@ export default function App() {
           actionState={caseActionState}
           evidenceFeedbackState={caseEvidenceFeedbackState}
           onCaseAction={handleCaseAction}
+          onCaseOwnerAction={handleCaseOwnerAction}
           onEvidenceFeedback={handleCaseEvidenceFeedback}
           onOpenRequests={() => setActiveTab("requests")}
           onOpenRequest={openRequestId}
