@@ -134,23 +134,54 @@ export default function RequestsView({
               </div>
               <div className="list-stack">
                 {group.items.map((item) => (
-                  <button
+                  <article
                     key={item.requestId}
-                    type="button"
                     className={selectedRequest?.requestId === item.requestId ? "attention-card selected" : "attention-card"}
-                    onClick={() => onSelectRequest(item)}
                   >
-                    <div className="attention-card-top">
-                      <strong>#{item.requestId} • {item.reference}</strong>
-                      <span>{item.status}</span>
+                    <button type="button" className="card-button-reset" onClick={() => onSelectRequest(item)}>
+                      <div className="attention-card-top">
+                        <strong>#{item.requestId} • {item.reference}</strong>
+                        <span>{item.status}</span>
+                      </div>
+                      <p>{item.description || "No request description yet."}</p>
+                      <div className="attention-card-meta">
+                        <span>Case: {item.caseStageLabel || item.caseStage}</span>
+                        <span>Assigned: {item.assignedPartsLabel || "unassigned"}</span>
+                        <span>Next: {item.nextAction || "n/a"}</span>
+                      </div>
+                    </button>
+                    <div className="action-row compact-actions">
+                      <button type="button" className="secondary-button" onClick={() => onSelectRequest(item)}>
+                        Open
+                      </button>
+                      {!item.assignedPartsLabel && (
+                        <button type="button" className="secondary-button" disabled={requestActionBusy} onClick={() => onRequestAction(item.requestId, "claim")}>
+                          Claim
+                        </button>
+                      )}
+                      {String(item.status || "").toLowerCase() !== "resolved" && (
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          disabled={requestActionBusy}
+                          onClick={() =>
+                            onRequestAction(
+                              item.requestId,
+                              "status",
+                              { status: String(item.status || "").toLowerCase() === "received" ? "resolved" : "received" }
+                            )
+                          }
+                        >
+                          {String(item.status || "").toLowerCase() === "received" ? "Resolve" : "Mark received"}
+                        </button>
+                      )}
+                      {item.caseReference && (
+                        <button type="button" className="secondary-button" disabled={requestActionBusy} onClick={() => onOpenCase?.(item.caseReference)}>
+                          Open case
+                        </button>
+                      )}
                     </div>
-                    <p>{item.description || "No request description yet."}</p>
-                    <div className="attention-card-meta">
-                      <span>Case: {item.caseStageLabel || item.caseStage}</span>
-                      <span>Assigned: {item.assignedPartsLabel || "unassigned"}</span>
-                      <span>Next: {item.nextAction || "n/a"}</span>
-                    </div>
-                  </button>
+                  </article>
                 ))}
               </div>
             </section>

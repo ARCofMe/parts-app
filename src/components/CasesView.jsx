@@ -133,24 +133,58 @@ export default function CasesView({
               </div>
               <div className="list-stack">
                 {group.items.map((item) => (
-                  <button
+                  <article
                     key={item.caseId}
-                    type="button"
                     className={selectedCase?.reference === item.reference ? "attention-card selected" : "attention-card"}
-                    onClick={() => onSelectCase(item)}
                   >
-                    <div className="attention-card-top">
-                      <strong>{item.reference}</strong>
-                      <span>{item.stageLabel || item.stage}</span>
+                    <button type="button" className="card-button-reset" onClick={() => onSelectCase(item)}>
+                      <div className="attention-card-top">
+                        <strong>{item.reference}</strong>
+                        <span>{item.stageLabel || item.stage}</span>
+                      </div>
+                      <p>{item.nextAction || item.latestStatusText || "No next action text yet."}</p>
+                      <div className="attention-card-meta">
+                        <span>Status: {item.status || "unknown"}</span>
+                        <span>SR: {item.serviceRequestStatus || "unknown"}</span>
+                        <span>Age: {item.ageBucket || "n/a"}</span>
+                        <span>Owner: {item.assignedPartsLabel || "unassigned"}</span>
+                      </div>
+                    </button>
+                    <div className="action-row compact-actions">
+                      <button type="button" className="secondary-button" onClick={() => onSelectCase(item)}>
+                        Open
+                      </button>
+                      {!item.assignedPartsLabel && (
+                        <button type="button" className="secondary-button" disabled={Boolean(actionState?.loading)} onClick={() => onCaseOwnerAction?.(item.reference, "claim")}>
+                          Claim
+                        </button>
+                      )}
+                      {String(item.stage || "").toLowerCase() === "part_received" ? (
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          disabled={Boolean(actionState?.loading)}
+                          onClick={() => onCaseAction?.(item.srId, "ready", { details: "Part ready for dispatch scheduling.", readyNote: "" })}
+                        >
+                          Ready to schedule
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          disabled={Boolean(actionState?.loading)}
+                          onClick={() => onCaseAction?.(item.srId, "received", { details: "Part received and ready for verification.", receivedFrom: "" })}
+                        >
+                          Mark received
+                        </button>
+                      )}
+                      {!!item.openRequestIds?.length && (
+                        <button type="button" className="secondary-button" disabled={Boolean(actionState?.loading)} onClick={onOpenRequests}>
+                          Open requests
+                        </button>
+                      )}
                     </div>
-                    <p>{item.nextAction || item.latestStatusText || "No next action text yet."}</p>
-                    <div className="attention-card-meta">
-                      <span>Status: {item.status || "unknown"}</span>
-                      <span>SR: {item.serviceRequestStatus || "unknown"}</span>
-                      <span>Age: {item.ageBucket || "n/a"}</span>
-                      <span>Owner: {item.assignedPartsLabel || "unassigned"}</span>
-                    </div>
-                  </button>
+                  </article>
                 ))}
               </div>
             </section>

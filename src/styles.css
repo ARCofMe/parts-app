@@ -418,6 +418,21 @@ button, input { font: inherit; }
 .detail-block { margin-top: 18px; }
 .grouped-list { margin-top: 0; }
 
+.card-button-reset {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+}
+
+.compact-actions {
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
 .action-row,
 .inline-form-row {
   display: flex;
