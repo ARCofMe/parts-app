@@ -338,7 +338,6 @@ describe("Parts App", () => {
       JSON.stringify({
         routeDeskUrl: "https://route.example.com",
         partsAppUrl: "https://parts.example.com",
-        fieldDeskUrl: "javascript:alert(1)",
       })
     );
     partsApiMock.getBoard.mockResolvedValue({ queueSummary: {}, caseMetrics: {}, openCases: [], openTrackedRequests: [] });

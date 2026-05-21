@@ -1,4 +1,4 @@
-import { getWorkspaceLinkStatus } from "../workspaceLinks";
+import { getWorkspaceLinkStatus, summarizeWorkspaceLinks } from "../workspaceLinks";
 
 const CASES_FILTER_KEY = "cases";
 const REQUESTS_FILTER_KEY = "requests";
@@ -15,13 +15,10 @@ export default function SettingsView({
   onWorkspaceLinksChange,
 }) {
   const ecosystemStatus = getWorkspaceLinkStatus(workspaceLinks, "partsDesk");
-  const configuredCount = ecosystemStatus.filter((item) => item.configured).length;
-  const siblingStatus = ecosystemStatus.filter((item) => !item.current);
-  const configuredSiblingCount = siblingStatus.filter((item) => item.configured).length;
+  const workspaceSummary = summarizeWorkspaceLinks(workspaceLinks, "partsDesk");
   const preflightChecks = [
     { label: "OpsHub launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "opsHub")?.configured) },
     { label: "RouteDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "routeDesk")?.configured) },
-    { label: "FieldDesk launcher ready", ready: Boolean(ecosystemStatus.find((item) => item.appKey === "fieldDesk")?.configured) },
     { label: "Remember last case", ready: Boolean(preferences.rememberLastCase) },
     { label: "Restore last case on launch", ready: Boolean(preferences.restoreLastCaseOnLaunch) },
     { label: "Persist case filters", ready: Boolean(preferences.persistFilters[CASES_FILTER_KEY]) },
@@ -59,7 +56,11 @@ export default function SettingsView({
             </div>
             <div className="detail-value">
               <span>Sibling apps</span>
-              <strong>{configuredSiblingCount} / {siblingStatus.length} linked</strong>
+              <strong>{workspaceSummary.siblingConfigured} / {workspaceSummary.siblingTotal} linked</strong>
+            </div>
+            <div className="detail-value">
+              <span>Launcher readiness</span>
+              <strong>{workspaceSummary.ready ? "Ready" : "Needs links"}</strong>
             </div>
             <div className="detail-value">
               <span>Case restore</span>
@@ -199,7 +200,7 @@ export default function SettingsView({
         <article className="metric-card wide">
           <p>Ecosystem links</p>
           <p className="muted">
-            {configuredCount} of {ecosystemStatus.length} workspaces configured.
+            {workspaceSummary.configured} of {workspaceSummary.total} workspaces configured.
           </p>
           <div className="settings-grid">
             <label className="field">
@@ -226,18 +227,10 @@ export default function SettingsView({
                 placeholder="parts.example.com"
               />
             </label>
-            <label className="field">
-              <span>FieldDesk URL</span>
-              <input
-                value={workspaceLinks?.fieldDeskUrl || ""}
-                onChange={(event) => onWorkspaceLinksChange?.({ ...workspaceLinks, fieldDeskUrl: event.target.value })}
-                placeholder="field.example.com"
-              />
-            </label>
           </div>
           <p className="muted">
             Bare domains are normalized to `https://`. Invalid or unsafe URLs stay hidden. Saved values override the
-            launcher defaults seeded from your env file.
+            launcher defaults seeded from your env file. FieldDesk runs on each technician device and is configured there.
           </p>
           <div className="settings-grid">
             {ecosystemStatus.map((item) => (
@@ -251,6 +244,31 @@ export default function SettingsView({
                 ) : null}
               </div>
             ))}
+          </div>
+          {workspaceSummary.missingLabels.length > 0 && (
+            <p className="muted">Missing launchers: {workspaceSummary.missingLabels.join(", ")}</p>
+          )}
+          {workspaceSummary.configuredLabels.length > 0 && (
+            <p className="muted">Ready launchers: {workspaceSummary.configuredLabels.join(", ")}</p>
+          )}
+        </article>
+
+        <article className="metric-card wide device-note">
+          <p className="section-kicker">Tech Desk</p>
+          <h2 className="settings-title">Per-device FieldDesk</h2>
+          <p className="settings-copy">
+            FieldDesk is configured on each technician phone or tablet. PartsDesk keeps RouteDesk and OpsHub handoffs
+            here, while technician-specific FieldDesk runtime settings stay with the device.
+          </p>
+          <div className="settings-grid">
+            <div className="detail-value">
+              <span>PartsDesk responsibility</span>
+              <strong>parts handoff only</strong>
+            </div>
+            <div className="detail-value">
+              <span>FieldDesk location</span>
+              <strong>technician device</strong>
+            </div>
           </div>
         </article>
       </div>

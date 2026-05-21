@@ -28,7 +28,6 @@ const DEFAULT_WORKSPACE_LINKS = {
   opsHubUrl: import.meta.env.VITE_OPSHUB_URL || "",
   routeDeskUrl: import.meta.env.VITE_ROUTEDESK_URL || "",
   partsAppUrl: import.meta.env.VITE_PARTSAPP_URL || "",
-  fieldDeskUrl: import.meta.env.VITE_FIELDDESK_URL || "",
 };
 
 function resolveThemeMode(themeMode) {
@@ -476,10 +475,16 @@ export default function App() {
     setPreferences((current) => (shallowEqual(current.requestFilters, filters) ? current : { ...current, requestFilters: filters }));
   }
 
+  const navBadges = {
+    cases: cases.length ? String(cases.length) : "",
+    requests: requests.length ? String(requests.length) : "",
+    settings: partsUserId ? "" : "!",
+  };
+
   return (
     <div className="app-shell">
       <BrandBar appName="PartsDesk" workspaceLinks={workspaceLinks} currentApp="partsDesk" />
-      <TabNav activeTab={activeTab} onSelect={setActiveTab} />
+      <TabNav activeTab={activeTab} onSelect={setActiveTab} badges={navBadges} />
 
       {activeTab === "board" && (
         <BoardView

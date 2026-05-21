@@ -7,7 +7,7 @@ const PARTS_READ_TIMEOUT_MS = Number(import.meta.env.VITE_OPS_HUB_PARTS_READ_TIM
 
 async function request(path, options = {}) {
   const controller = new AbortController();
-  const timeoutMs = Number(options.timeoutMs) > 0 ? Number(options.timeoutMs) : REQUEST_TIMEOUT_MS;
+  const timeoutMs = clampTimeout(options.timeoutMs || REQUEST_TIMEOUT_MS);
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   const hasBody = options.body !== undefined;
   try {
@@ -66,13 +66,13 @@ export const partsApi = {
     return request(`/parts/cases/${encodeURIComponent(reference)}/timeline`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   postPartsCaseAction(reference, action, body = {}) {
-    return request(`/parts/cases/${encodeURIComponent(reference)}/${action}`, { method: "POST", body });
+    return request(`/parts/cases/${encodePathPart(reference)}/${encodePathPart(action)}`, { method: "POST", body });
   },
   getRecommendationConversation(srId) {
-    return request(`/parts/sr/${srId}/recommendation_conversation`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
+    return request(`/parts/sr/${encodePathPart(srId)}/recommendation_conversation`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   submitComplaintEvidenceFeedback(srId, body = {}) {
-    return request(`/parts/sr/${srId}/complaint_intelligence/feedback`, { method: "POST", body });
+    return request(`/parts/sr/${encodePathPart(srId)}/complaint_intelligence/feedback`, { method: "POST", body });
   },
   getRequests(filters = {}) {
     const params = new URLSearchParams();
@@ -83,13 +83,13 @@ export const partsApi = {
     return request(`/parts/requests${suffix}`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   getRequest(requestId) {
-    return request(`/parts/requests/${requestId}`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
+    return request(`/parts/requests/${encodePathPart(requestId)}`, { timeoutMs: PARTS_READ_TIMEOUT_MS });
   },
   postRequestAction(requestId, action, body = {}) {
-    return request(`/parts/requests/${requestId}/${action}`, { method: "POST", body });
+    return request(`/parts/requests/${encodePathPart(requestId)}/${encodePathPart(action)}`, { method: "POST", body });
   },
   postCaseAction(srId, action, body = {}) {
-    return request(`/parts/sr/${srId}/${action}`, { method: "POST", body });
+    return request(`/parts/sr/${encodePathPart(srId)}/${encodePathPart(action)}`, { method: "POST", body });
   },
   sync() {
     return request("/parts/requests/sync", { method: "POST" });
@@ -98,6 +98,16 @@ export const partsApi = {
     return request("/parts/requests/reconcile", { method: "POST" });
   },
 };
+
+function encodePathPart(value) {
+  return encodeURIComponent(String(value || "").trim());
+}
+
+function clampTimeout(value) {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) return 15000;
+  return Math.min(120000, Math.max(5000, numeric));
+}
 
 export function getPartsUserId() {
   const stored = readLocalStorage(PARTS_USER_ID_STORAGE_KEY);
